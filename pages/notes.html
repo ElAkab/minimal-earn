@@ -9,8 +9,8 @@
 	<body class="bg-gray-800 text-white min-h-screen">
 		<header class="bg-black/25 flex justify-evenly items-center p-5 sticky">
 			<!-- Logo || Titre -->
-			<span class="text-3xl font-bold cursor-pointer"
-				>Minima <span class="text-blue-600">learn</span></span
+			<a href="/" class="text-3xl font-bold cursor-pointer"
+				>Minima <span class="text-blue-600">learn</span></a
 			>
 
 			<div class="flex gap-2">
@@ -18,7 +18,10 @@
 				<nav class="mr-5">
 					<ul class="flex gap-2.5">
 						<li>
-							<a class="hover:underline" href="/notes">Notes</a>
+							<a class="hover:underline" href="/pages/notes.html">Notes</a>
+						</li>
+						<li>
+							<a class="hover:underline" href="/pages/review.html">Révisions</a>
 						</li>
 						<li>
 							<a class="hover:underline" href="/settings">Paramètres</a>
@@ -42,18 +45,135 @@
 			</div>
 		</header>
 
-		<main class="flex w-full min-h-full mt-2.5">
-			<section class="flex gap-5 mx-auto text-2xl font-bold">
-				<button class="cursor-pointer underline">Tout</button>
-				<button class="cursor-pointer">Programmation</button>
-				<button class="cursor-pointer">Autre</button>
+		<main class="px-8 py-6 max-w-7xl mx-auto">
+			<h1 class="text-3xl font-bold mb-6">Mes Notes</h1>
+
+			<!-- Filtres -->
+			<section class="flex gap-5 mb-8">
+				<button
+					data-filter="all"
+					class="filter-btn cursor-pointer px-4 py-2 rounded bg-blue-600 font-semibold"
+				>
+					Tout
+				</button>
+				<button
+					data-filter="claudeCode"
+					class="filter-btn cursor-pointer px-4 py-2 rounded bg-gray-700 hover:bg-gray-600"
+				>
+					Programmation
+				</button>
+				<button
+					data-filter="gemma3"
+					class="filter-btn cursor-pointer px-4 py-2 rounded bg-gray-700 hover:bg-gray-600"
+				>
+					Autre
+				</button>
 			</section>
 
-			<section id="notes-field">
-				<!-- Futures notes -->
+			<!-- Liste des notes -->
+			<section
+				id="notes-field"
+				class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+			>
+				<!-- Les notes seront injectées ici par JS -->
 			</section>
+
+			<!-- Message si aucune note -->
+			<div id="no-notes-message" class="text-center text-gray-400 mt-8 hidden">
+				<p class="text-xl">Aucune note disponible</p>
+				<a href="/" class="text-blue-500 hover:underline mt-2 inline-block"
+					>Créer une première note</a
+				>
+			</div>
 		</main>
 
-		<!-- <script type="module" src="script.js"></script> -->
+		<!-- Modal d'édition -->
+		<div
+			id="edit-modal"
+			class="hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50"
+		>
+			<div
+				class="bg-gray-800 p-6 rounded-lg w-full max-w-2xl mx-4 border border-gray-700"
+			>
+				<h2 class="text-2xl font-bold mb-4">Modifier la note</h2>
+				<form id="edit-form">
+					<input type="hidden" id="edit-note-id" />
+
+					<div class="mb-4">
+						<label class="block text-sm font-medium mb-2" for="edit-title"
+							>Titre</label
+						>
+						<input
+							type="text"
+							id="edit-title"
+							class="w-full p-3 bg-gray-700 border border-gray-600 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none"
+						/>
+					</div>
+
+					<div class="mb-4">
+						<label class="block text-sm font-medium mb-2" for="edit-description"
+							>Description</label
+						>
+						<textarea
+							id="edit-description"
+							rows="4"
+							class="w-full p-3 bg-gray-700 border border-gray-600 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none resize-none"
+							required
+						></textarea>
+					</div>
+
+					<div class="mb-4">
+						<label class="block text-sm font-medium mb-2">Intensité</label>
+						<div class="flex gap-4">
+							<label class="flex items-center">
+								<input
+									type="radio"
+									name="edit-intensity"
+									value="chill"
+									class="mr-2"
+								/>
+								Chill
+							</label>
+							<label class="flex items-center">
+								<input
+									type="radio"
+									name="edit-intensity"
+									value="moderate"
+									class="mr-2"
+								/>
+								Modéré
+							</label>
+							<label class="flex items-center">
+								<input
+									type="radio"
+									name="edit-intensity"
+									value="intensive"
+									class="mr-2"
+								/>
+								Intense
+							</label>
+						</div>
+					</div>
+
+					<div class="flex gap-4 justify-end">
+						<button
+							type="button"
+							id="cancel-edit"
+							class="px-4 py-2 bg-gray-600 hover:bg-gray-500 rounded transition"
+						>
+							Annuler
+						</button>
+						<button
+							type="submit"
+							class="px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded transition"
+						>
+							Enregistrer
+						</button>
+					</div>
+				</form>
+			</div>
+		</div>
+
+		<script type="module" src="../src/notes.js"></script>
 	</body>
 </html>

@@ -16,6 +16,7 @@ app.get("/", (req, res) => {
 
 // Monter le router sous /api pour correspondre au fetch client "/api/generate-note"
 app.use("/api", routeHandlers);
+app.use("/", routeHandlers);
 
 app.listen(PORT, () => {
 	console.log(`Server is running on http://localhost:${PORT}`);

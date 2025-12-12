@@ -1,0 +1,30 @@
+[
+  {
+    "id": 1765538465730,
+    "aiTags": [
+      "gemma3"
+    ],
+    "title": "Test",
+    "description": "Formation du Nord en hausse ",
+    "intensity": "chill",
+    "createdAt": "2025-12-12T11:21:05.730Z",
+    "reviewCount": 0,
+    "lastReviewed": null,
+    "lastInterval": 604800000,
+    "nextReviewAt": "2025-12-19T11:21:05.730Z"
+  },
+  {
+    "id": 1765541076220,
+    "aiTags": [
+      "claudeCode"
+    ],
+    "title": "Units testing ",
+    "description": "Triple A => Arrange, Act and Assert\nPossibilité de skip un test en plaçant un \"x\" avant it() (ou) describe() et un \"f\" pour \"focus\". Pour Vitest c'est it.skip() & it.only().",
+    "intensity": "intensive",
+    "createdAt": "2025-12-12T12:04:36.220Z",
+    "reviewCount": 0,
+    "lastReviewed": null,
+    "lastInterval": 21600000,
+    "nextReviewAt": "2025-12-12T21:54:35.124Z"
+  }
+]

@@ -66,7 +66,7 @@ submitBtn.addEventListener("click", async (e) => {
 	// Préparation de l'objet à envoyer
 	// =====================
 	const payload = {
-		AI: trueEl,
+		aiTags: trueEl,
 		title: noteTitle,
 		description: noteDesc,
 		// "intensity" will be added based on radio selection
