@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>minimal-earn</title>
+		<link rel="stylesheet" href="./src/style.css" />
+	</head>
+	<body class="bg-gray-800 text-white min-h-screen">
+		<header class="bg-black/25 flex justify-evenly items-center p-5 sticky">
+			<!-- Logo || Titre -->
+			<span class="text-3xl font-bold cursor-pointer"
+				>Minima <span class="text-blue-600">learn</span></span
+			>
+
+			<div class="flex gap-2">
+				<!-- Navigation -->
+				<nav class="mr-5">
+					<ul class="flex gap-2.5">
+						<li>
+							<a class="hover:underline" href="/notes">Notes</a>
+						</li>
+						<li>
+							<a class="hover:underline" href="/settings">Paramètres</a>
+						</li>
+					</ul>
+				</nav>
+
+				<!-- Connexion / Inscription -->
+				<div class="font-bold">
+					<a
+						class="bg-white text-black p-1.5 rounded cursor-pointer hover:opacity-85 transition"
+						href="/sign"
+						>Inscription</a
+					>
+					<a
+						class="bg-blue-600 text-white p-1.5 rounded cursor-pointer hover:opacity-85 transition"
+						href="/login"
+						>Connexion</a
+					>
+				</div>
+			</div>
+		</header>
+
+		<main class="flex w-full min-h-full mt-2.5">
+			<section class="w-1/2 sm:px-24">
+				<h1 class="text-2xl text-center">Prends tes notes</h1>
+				<hr class="my-3.5" />
+				<form method="post" class="flex flex-col">
+					<div class="flex mb-4 justify-center items-center">
+						<button
+							type="button"
+							data-ai="claudeCode"
+							class="inline-flex gap-2.5 items-center justify-center text-white bg-linear-to-r from-orange-400 via-orange-500 to-orange-600 hover:bg-linear-to-br focus:ring-4 focus:outline-none focus:ring-orange-300 dark:focus:ring-orange-800 shadow-lg shadow-orange-500/50 dark:shadow-lg dark:shadow-orange-800/80 font-medium rounded-l-full text-sm px-4 py-2.5 mx-auto w-10/12 p-1 my-2 text-center leading-5 cursor-pointer transition check-btn"
+						>
+							Programmation
+							<!-- <img
+								src="./public/images/Claude_AI_symbol.svg.png"
+								alt="AI : Claude Code"
+								width="20"
+							/> -->
+						</button>
+
+						<button
+							type="button"
+							class="inline-flex gap-2.5 items-center justify-center text-white bg-linear-to-r from-cyan-400 via-cyan-500 to-cyan-600 hover:bg-linear-to-br focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 shadow-lg shadow-cyan-500/50 dark:shadow-lg dark:shadow-cyan-800/80 font-medium rounded-r-full text-sm px-4 py-2.5 mx-auto w-10/12 p-1 my-2 text-center leading-5 cursor-pointer check-btn"
+							data-ai="gemma3"
+						>
+							Autre
+							<!-- <img
+								src="./public/images/gemma-color.png"
+								alt="AI : Claude Code"
+								width="20"
+							/> -->
+						</button>
+					</div>
+
+					<input
+						type="text"
+						id="note-title"
+						class="block w-full p-3 bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand shadow-xs placeholder:text-body mb-3"
+						placeholder="Pose ton titre"
+						required
+					/>
+
+					<textarea
+						id="notes-desc"
+						rows="4"
+						class="bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full p-3.5 shadow-xs placeholder:text-body resize-none"
+						placeholder="Pose la description"
+						required
+					></textarea>
+
+					<button
+						id="dropdownHelperRadioButton"
+						data-dropdown-toggle="dropdownHelperRadio"
+						class="w-4/12 inline-flex items-center justify-center text-white bg-brand box-border border-2 border-black hover:bg-brand-strong shadow-xl font-medium leading-5 rounded-base text-sm my-6 px-4 py-2.5 cursor-pointer"
+						type="button"
+					>
+						Priorité
+						<svg
+							class="w-4 h-4 ms-1.5 -me-0.5"
+							aria-hidden="true"
+							xmlns="http://www.w3.org/2000/svg"
+							width="24"
+							height="24"
+							fill="none"
+							viewBox="0 0 24 24"
+						>
+							<path
+								stroke="currentColor"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="m19 9-7 7-7-7"
+							/>
+						</svg>
+					</button>
+
+					<button
+						id="submit-form"
+						type="submit"
+						class="mt-1.5 inline-block bg-linear-to-tr from-blue-500 via-white/5 to-gray-600 hover:from-gray-600 hover:to-blue-500 border cursor-pointer transition rounded p-2"
+					>
+						Noter
+					</button>
+
+					<!-- Dropdown menu -->
+					<div
+						id="dropdownHelperRadio"
+						class="z-10 hidden bg-gray-700 border border-default-medium rounded-base shadow-lg w-56 transition"
+						data-popper-reference-hidden=""
+						data-popper-escaped=""
+						data-popper-placement="top"
+					>
+						<ul
+							class="p-2 text-sm text-body font-medium"
+							aria-labelledby="dropdownHelperRadioButton"
+						>
+							<li>
+								<div
+									class="flex p-2 w-full hover:bg-blue-500/35 transition rounded"
+								>
+									<div class="flex items-center h-5">
+										<input
+											id="helper-radio-4"
+											name="helper-radio"
+											type="radio"
+											value=""
+											class="w-4 h-4 text-neutral-primary border-default-strong bg-neutral-secondary-strong rounded-full checked:border-brand focus:ring-2 focus:outline-none focus:ring-brand-subtle border appearance-none"
+										/>
+									</div>
+									<div class="ms-2 text-sm">
+										<label for="helper-radio-4" class="select-none font-medium">
+											<div class="mb-1 text-white">Chill</div>
+											<p
+												id="helper-radio-text-4"
+												class="text-xs font-normal text-white"
+											>
+												De temps en temps, un petit rappel (rien de méchant).
+											</p>
+										</label>
+									</div>
+								</div>
+							</li>
+							<li>
+								<div
+									class="flex p-2 w-full hover:bg-amber-500/35 transition rounded"
+								>
+									<div class="flex items-center h-5">
+										<input
+											id="helper-radio-5"
+											name="helper-radio"
+											type="radio"
+											value=""
+											class="w-4 h-4 text-neutral-primary -strong bg-neutral-secondary-strong rounded-full checked:border-brand focus:ring-2 focus:outline-none focus:ring-brand-subtle border border-default appearance-none"
+										/>
+									</div>
+									<div class="ms-2 text-sm">
+										<label for="helper-radio-5" class="select-none font-medium">
+											<div class="mb-1 text-white">Modéré</div>
+											<p
+												id="helper-radio-text-5"
+												class="text-xs font-normal text-white"
+											>
+												Ce sujet aura plus de chance de se faire appeler.
+											</p>
+										</label>
+									</div>
+								</div>
+							</li>
+							<li>
+								<div
+									class="flex p-2 w-full hover:bg-red-700/40 transition rounded"
+								>
+									<div class="flex items-center h-5">
+										<input
+											id="helper-radio-6"
+											name="helper-radio"
+											type="radio"
+											checked
+											class="w-4 h-4 text-neutral-primary border-default-strong bg-neutral-secondary-strong rounded-full checked:border-brand focus:ring-2 focus:outline-none focus:ring-brand-subtle border appearance-none"
+										/>
+									</div>
+									<div class="ms-2 text-sm">
+										<label for="helper-radio-6" class="select-none font-medium">
+											<div class="mb-1 text-white">Intense</div>
+											<p
+												id="helper-radio-text-6"
+												class="text-xs font-normal text-white"
+											>
+												Des évaluations apparaiteront plusieurs fois par jours.
+											</p>
+										</label>
+									</div>
+								</div>
+							</li>
+						</ul>
+					</div>
+				</form>
+			</section>
+
+			<section class="w-1/2 px-8">
+				<h2 class="text-2xl text-center mb-2.5">Exemple de rendu</h2>
+				<article
+					class="bg-black border-4 w-full h-full p-4 rounded-3xl flex flex-col justify-center items-center relative"
+					id="toast-success"
+					role="alert"
+				>
+					<button
+						type="button"
+						class="ms-auto absolute top-0 right-0 mr-4 mt-4 flex items-center justify-center text-body hover:text-heading bg-transparent box-border border border-transparent hover:bg-neutral-secondary-medium focus:ring-4 focus:ring-neutral-tertiary font-medium leading-5 rounded-full text-sm h-8 w-8 focus:outline-none cursor-pointer transition"
+						data-dismiss-target="#toast-success"
+						aria-label="Close"
+					>
+						<span class="sr-only">Close</span>
+						<svg
+							class="w-5 h-5"
+							aria-hidden="true"
+							xmlns="http://www.w3.org/2000/svg"
+							width="24"
+							height="24"
+							fill="none"
+							viewBox="0 0 24 24"
+						>
+							<path
+								stroke="currentColor"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M6 18 17.94 6M18 18 6.06 6"
+							/>
+						</svg>
+					</button>
+
+					<!-- Titre de l'intérogation -->
+					<h3 class="text-center text-xl font-extrabold">
+						Titre de l'intérogation
+					</h3>
+					<hr class="my-3" />
+					<!-- Intérogation -->
+					<p class="text-center">
+						Lorem ipsum dolor sit amet, consectetur adipisicing elit. Fuga
+						assumenda nulla in accusamus a, adipisci doloribus maiores quod.
+					</p>
+
+					<div
+						class="w-full flex items-center px-3 py-2 rounded-base bg-black mt-7"
+					>
+						<textarea
+							id="chat"
+							rows="1"
+							class="bg-neutral-primary-medium border border-default-medium text-heading text-sm rounded-l-full focus:ring-fg-disabled focus:border-fg-disabled block w-full px-3 py-2.5 placeholder:text-body resize-none"
+							placeholder="Your message..."
+						></textarea>
+						<button
+							type="submit"
+							class="inline-flex p-2.5 px-4 bg-gray-800 justify-center text-shadow-fg-disabled rounded-r-full cursor-pointer hover:bg-fg-disabled/35"
+						>
+							<svg
+								class="w-6 h-6 rotate-90 rtl:-rotate-90"
+								aria-hidden="true"
+								xmlns="http://www.w3.org/2000/svg"
+								width="24"
+								height="24"
+								fill="none"
+								viewBox="0 0 24 24"
+							>
+								<path
+									stroke="currentColor"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									stroke-width="2"
+									d="m12 18-7 3 7-18 7 18-7-3Zm0 0v-5"
+								/>
+							</svg>
+							<span class="sr-only">Send message</span>
+						</button>
+					</div>
+
+					<div class="font-bold mt-4">
+						<button
+							type="button"
+							class="text-danger bg-transparent border-2 border-danger hover:bg-danger hover:text-white font-medium leading-5 rounded-base text-sm px-4 py-2 focus:outline-none cursor-pointer transition"
+						>
+							Je sais pas
+						</button>
+						<button
+							type="button"
+							class="text-yellow-300 bg-transparent border-2 border-y hover:bg-yellow-500 hover:text-white hover:border-amber-500 font-medium leading-5 rounded-base text-sm px-4 py-2 focus:outline-none cursor-pointer transition"
+						>
+							Indice
+						</button>
+					</div>
+				</article>
+			</section>
+		</main>
+
+		<script type="module" src="/src/main.js"></script>
+		<script src="../path/to/flowbite/dist/flowbite.min.js"></script>
+	</body>
+</html>

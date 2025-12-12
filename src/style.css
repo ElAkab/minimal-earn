@@ -1,0 +1,14 @@
+@import "tailwindcss";
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap");
+@import "flowbite/src/themes/default";
+
+@plugin "flowbite/plugin";
+@source "../node_modules/flowbite";
+
+/* Classe globale pour les inputs */
+.input {
+	@apply bg-gray-700 border border-b-blue-900 border-r-blue-400 rounded-md px-4 py-2 
+         focus:outline-none focus:ring-2 focus:ring-blue-500/40 
+         focus:border ring-blue-500/40 transition-colors;
+}

@@ -1,0 +1,14 @@
+{
+	"name": "backend",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"serve": "node --watch ./backend/server.js",
+		"test": "vitest"
+	},
+	"keywords": [],
+	"author": "Adam El Kabir",
+	"license": "ISC",
+	"packageManager": "pnpm@10.23.0"
+}
