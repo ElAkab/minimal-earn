@@ -64,7 +64,7 @@ function renderNotes() {
 function createNoteCard(note) {
 	const card = document.createElement("article");
 	card.className =
-		"bg-gray-900 border border-gray-700 rounded-lg p-4 hover:border-blue-500 transition";
+		"relative flex flex-col bg-gray-900 border border-gray-700 rounded-lg p-4 hover:border-blue-500 transition max-h-80 overflow-hidden";
 	card.dataset.noteId = note.id;
 
 	// Badge intensité
@@ -76,8 +76,8 @@ function createNoteCard(note) {
 
 	// Couleurs pour les tags IA
 	const aiTagColors = {
-		claudeCode: "bg-orange-500",
-		gemma3: "bg-cyan-500",
+		"hir0rameel/qwen-claude": "text-orange-500",
+		"gpt-oss": "text-cyan-500",
 	};
 
 	// Tags AI
@@ -86,76 +86,75 @@ function createNoteCard(note) {
 				.map(
 					(tag) =>
 						`<span class="inline-block ${
-							aiTagColors[tag] || "bg-gray-700"
-						} text-xs px-2 py-1 rounded text-white">${tag}</span>`
+							aiTagColors[tag] || "text-white"
+						} text-sm font-extrabold px-2 py-1 rounded">${tag}</span>`
 				)
 				.join(" ")
 		: "";
 
 	card.innerHTML = `
-        <div class="flex justify-between items-start mb-3">
-            <div>
-                <span class="inline-block ${
-									intensityColors[note.intensity] || intensityColors.moderate
-								} text-xs px-2 py-1 rounded text-white font-semibold mb-2">
-                    ${note.intensity || "moderate"}
-                </span>
-                ${aiTagsHTML ? `<div class="mt-1">${aiTagsHTML}</div>` : ""}
-                ${
-									note.aiModel
-										? `<div class="mt-1">
-                            <span class="inline-block bg-purple-600 text-xs px-2 py-1 rounded text-white font-semibold">
-                                🤖 ${note.aiModel}
-                            </span>
-                        </div>`
-										: ""
-								}
-            </div>
-            <div class="flex gap-2">
-                <button
-                    onclick="editNote(${note.id})"
-                    class="text-blue-400 hover:text-blue-300 transition"
-                    title="Modifier"
-                >
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                    </svg>
-                </button>
-                <button
-                    onclick="deleteNote(${note.id})"
-                    class="text-red-400 hover:text-red-300 transition"
-                    title="Supprimer"
-                >
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                </button>
-            </div>
-        </div>
-        
-        ${
-					note.title
-						? `<h3 class="text-xl font-bold mb-2">${escapeHtml(
-								note.title
-						  )}</h3>`
+		<div class="flex justify-between items-start mb-3">
+			<div class="flex justify-between items-center">
+				<span class="${
+					intensityColors[note.intensity] || intensityColors.moderate
+				} text-xs px-2 py-1 rounded text-white font-semibold">
+					${note.intensity || "moderate"}
+				</span>
+				${
+					note.aiModel
+						? `<span class="bg-purple-600 text-xs px-2 py-1 rounded text-white font-semibold">
+				🤖 ${note.aiModel}
+				</span>`
 						: ""
 				}
-        
-        <p class="text-gray-300 mb-3">${escapeHtml(note.description || "")}</p>
-        
-        <div class="text-xs text-gray-500 flex justify-between">
-            <span>Créé: ${formatDate(note.createdAt)}</span>
-            <span>Révisions: ${note.reviewCount || 0}</span>
-        </div>
-        
-        ${
-					note.nextReviewAt
-						? `<div class="text-xs text-gray-400 mt-1">Prochaine révision: ${formatDate(
-								note.nextReviewAt
-						  )}</div>`
-						: ""
-				}
-    `;
+				
+			</div>
+			${aiTagsHTML ? `<div>${aiTagsHTML}</div>` : ""}
+			<div class="flex gap-2">
+				<button
+					onclick="editNote(${note.id})"
+					class="text-blue-400 hover:text-blue-300 transition"
+					title="Modifier"
+				>
+					<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+					</svg>
+				</button>
+				<button
+					onclick="deleteNote(${note.id})"
+					class="text-red-400 hover:text-red-300 transition"
+					title="Supprimer"
+				>
+					<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+					</svg>
+				</button>
+			</div>
+		</div>
+		
+		${
+			note.title
+				? `<h3 class="text-xl font-bold mb-2">${escapeHtml(note.title)}</h3>`
+				: ""
+		}
+		
+		<p class="text-gray-300 mb-3">${escapeHtml(note.description || "")}</p>
+
+		<!-- Effet dégradé en bas pour masquer le texte débordant -->
+		<div class="absolute bottom-0 left-0 right-0 p-3 h-16 bg-gray-900/65 pointer-events-none rounded-b-lg">
+			<span>Créé: ${formatDate(note.createdAt)}</span>
+			<span class="pb-5">Révisions: ${note.reviewCount || 0}</span>
+			${
+				note.nextReviewAt
+					? `<div class="text-xs text-gray-400 mt-1">Prochaine révision: ${formatDate(
+							note.nextReviewAt
+					  )}</div>`
+					: ""
+			}
+		</div>
+		
+		
+	`;
 
 	return card;
 }

@@ -74,18 +74,127 @@ router.get("/due-notes", async (req, res) => {
 	}
 });
 
-// Return a prompt for a specific note
-router.get("/prompt/:id", async (req, res) => {
+// Obselete : Get prompt for a specific note
+// router.get("/prompt/:id", async (req, res) => {
+// 	try {
+// 		const id = Number(req.params.id);
+// 		const notes = await dataStore.readNotes();
+// 		const note = notes.find((n) => n.id === id);
+// 		if (!note) return res.status(404).json({ message: "Note not found" });
+// 		const prompt = ai.buildPrompt(note);
+// 		res.json({ prompt, ai: ai.pickIA(note.aiTags) });
+// 	} catch (err) {
+// 		console.error(err);
+// 		res.status(500).json({ message: "Failed to build prompt" });
+// 	}
+// });
+
+// Censé être appelé pour générer une question pour une note spécifique via IA
+router.get("/generate-question/:id", async (req, res) => {
 	try {
 		const id = Number(req.params.id);
+		console.log(`📝 Requête génération question pour note ID: ${id}`);
+		
 		const notes = await dataStore.readNotes();
 		const note = notes.find((n) => n.id === id);
-		if (!note) return res.status(404).json({ message: "Note not found" });
-		const prompt = ai.buildPrompt(note);
-		res.json({ prompt, ai: ai.pickIA(note.aiTags) });
+		
+		if (!note) {
+			console.error(`❌ Note ${id} introuvable`);
+			return res.status(404).json({ message: "Note not found" });
+		}
+
+		console.log(`📄 Note trouvée:`, {
+			id: note.id,
+			title: note.title,
+			descriptionLength: note.description?.length || 0,
+		});
+
+		// Générer la question via IA
+		const question = await ai.generateQuestion(note);
+		const model = ai.pickModel(note);
+		
+		console.log(`✅ Question générée avec succès pour note ${id}`);
+		res.json({ question, model });
 	} catch (err) {
-		console.error(err);
-		res.status(500).json({ message: "Failed to build prompt" });
+		console.error("❌ Erreur génération question:", err);
+		console.error("Stack trace:", err.stack);
+		res.status(500).json({ 
+			message: "Failed to generate question",
+			error: err.message 
+		});
+	}
+});
+
+// Evaluate user's answer using AI
+router.post("/evaluate-answer", async (req, res) => {
+	try {
+		const { noteId, question, userAnswer } = req.body;
+		
+		console.log(`📝 Requête évaluation pour note ID: ${noteId}`);
+
+		if (!userAnswer || userAnswer.trim() === "") {
+			console.warn(`⚠️ Réponse vide reçue pour note ${noteId}`);
+			return res.status(400).json({ message: "Answer is required" });
+		}
+
+		const notes = await dataStore.readNotes();
+		const note = notes.find((n) => n.id === Number(noteId));
+		
+		if (!note) {
+			console.error(`❌ Note ${noteId} introuvable`);
+			return res.status(404).json({ message: "Note not found" });
+		}
+
+		console.log(`🤖 Évaluation en cours pour note ${noteId}...`);
+
+		// Évaluer la réponse via IA
+		const evaluation = await ai.evaluateAnswer(
+			question,
+			userAnswer,
+			note.description
+		);
+
+		console.log(`✅ Évaluation terminée pour note ${noteId}:`, {
+			isCorrect: evaluation.isCorrect,
+		});
+
+		res.json(evaluation);
+	} catch (err) {
+		console.error("❌ Erreur évaluation réponse:", err);
+		console.error("Stack trace:", err.stack);
+		res.status(500).json({ 
+			message: "Failed to evaluate answer",
+			error: err.message 
+		});
+	}
+});
+
+// Generate a hint for a specific note
+router.get("/hint/:id", async (req, res) => {
+	try {
+		const id = Number(req.params.id);
+		console.log(`💡 Requête génération indice pour note ID: ${id}`);
+		
+		const notes = await dataStore.readNotes();
+		const note = notes.find((n) => n.id === id);
+		
+		if (!note) {
+			console.error(`❌ Note ${id} introuvable`);
+			return res.status(404).json({ message: "Note not found" });
+		}
+
+		// Générer un indice via IA
+		const hint = await ai.generateHint(note);
+		
+		console.log(`✅ Indice généré avec succès pour note ${id}`);
+		res.json({ hint });
+	} catch (err) {
+		console.error("❌ Erreur génération indice:", err);
+		console.error("Stack trace:", err.stack);
+		res.status(500).json({ 
+			message: "Failed to generate hint",
+			error: err.message 
+		});
 	}
 });
 
@@ -117,31 +226,68 @@ router.post("/review-note", async (req, res) => {
 // Get / set config (toggle interrogations)
 router.get("/config", async (req, res) => {
 	try {
+		console.log("📡 GET /config - Lecture de la configuration");
 		const cfg = await dataStore.readConfig();
+		console.log("✅ Configuration chargée:", cfg);
 		res.json(cfg);
 	} catch (err) {
-		console.error(err);
-		res.status(500).json({ message: "Failed to read config" });
+		console.error("❌ Erreur lors de la lecture de la config:", err);
+		// Retourner une config par défaut en cas d'erreur
+		res.status(500).json({
+			message: "Failed to read config",
+			error: err.message,
+			fallback: { interrogationsEnabled: true },
+		});
 	}
 });
 
 router.post("/config", async (req, res) => {
 	try {
+		console.log("📡 POST /config - Mise à jour de la configuration");
+		console.log("📥 Body reçu:", req.body);
+
 		const incoming = req.body || {};
+
 		// Whitelist of allowed config properties
-		const allowedProps = ["interrogationsEnabled", "someOtherConfigKey"]; // TODO: update with actual config keys
+		const allowedProps = ["interrogationsEnabled"];
 		const filtered = {};
+
 		for (const key of allowedProps) {
 			if (Object.prototype.hasOwnProperty.call(incoming, key)) {
+				// Validation du type pour interrogationsEnabled
+				if (
+					key === "interrogationsEnabled" &&
+					typeof incoming[key] !== "boolean"
+				) {
+					return res.status(400).json({
+						message: "interrogationsEnabled must be a boolean",
+					});
+				}
 				filtered[key] = incoming[key];
 			}
 		}
-		const cfg = Object.assign(await dataStore.readConfig(), filtered);
+
+		// Si aucune propriété valide n'a été fournie
+		if (Object.keys(filtered).length === 0) {
+			return res.status(400).json({
+				message: "No valid config properties provided",
+			});
+		}
+
+		// Charger la config existante et fusionner
+		const existingConfig = await dataStore.readConfig();
+		const cfg = Object.assign(existingConfig, filtered);
+
 		await dataStore.writeConfig(cfg);
+		console.log("✅ Configuration mise à jour:", cfg);
+
 		res.json(cfg);
 	} catch (err) {
-		console.error(err);
-		res.status(500).json({ message: "Failed to write config" });
+		console.error("❌ Erreur lors de l'écriture de la config:", err);
+		res.status(500).json({
+			message: "Failed to write config",
+			error: err.message,
+		});
 	}
 });
 

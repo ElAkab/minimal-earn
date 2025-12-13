@@ -126,79 +126,76 @@ Routes implémentées :
 
 ---
 
+## ✅ Intégration IA - TERMINÉE ! 🎉
+
+### 1. **Génération de questions** ✅
+
+**Implémenté dans [ai.js](backend/lib/ai.js)**
+
+- ✅ Fonction `generateQuestion(note)` - Génère des questions via Ollama
+- ✅ Sélection intelligente de modèle selon le contenu
+- ✅ Route API : `GET /api/generate-question/:id`
+- ✅ Intégré dans [review.js](src/review.js)
+
+**Modèles utilisés :**
+
+- `gemma2:2b` - Modèle léger généraliste (par défaut)
+- `qwen2.5-coder:3b` - Modèle spécialisé programmation
+
+---
+
+### 2. **Évaluation automatique des réponses** ✅
+
+**Implémenté !** L'évaluation simulée a été remplacée par :
+
+- ✅ Fonction `evaluateAnswer(question, userAnswer, context)`
+- ✅ Route API : `POST /api/evaluate-answer`
+- ✅ Feedback intelligent généré par l'IA
+- ✅ Fallback gracieux en cas d'erreur
+
+**Comportement :**
+
+- Prompt strict : "CORRECT" ou "INCORRECT" + explication courte
+- Utilise le modèle léger (économique)
+- Intégré dans l'interface de révision
+
+---
+
+### 3. **Génération d'indices** ✅
+
+**Nouveau !** Le bouton "Indice" utilise maintenant l'IA :
+
+- ✅ Fonction `generateHint(note)`
+- ✅ Route API : `GET /api/hint/:id`
+- ✅ Indices contextuels et pertinents
+
+---
+
+### 4. **Architecture modulaire** ✅
+
+✅ **Sélection intelligente de modèle** selon :
+
+- Tags IA (`claudeCode` → modèle code)
+- Mots-clés détectés dans le contenu
+- Par défaut → modèle léger
+
+✅ **Sécurité & Performance :**
+
+- Timeout 30s sur tous les appels
+- Fallbacks en cas d'erreur
+- Aucun appel IA depuis le frontend
+- Logs sobres et informatifs
+
+✅ **Documentation complète :**
+
+- [IA_INTEGRATION.md](IA_INTEGRATION.md) - Doc technique
+- [QUICKSTART.md](QUICKSTART.md) - Guide de démarrage
+
+---
+
 ## ❌ Ce qui manque encore
 
-### 1. **Intégration Ollama** ❌
-
-**Problème :** L'IA ne génère pas encore les questions automatiquement.
-
-**Fichier à compléter :** [ai.js](backend/lib/ai.js)
-
-**Fonctions à implémenter :**
-
-- `buildPrompt(note)` - Construire un prompt pour Ollama
-- `pickIA(aiTags)` - Choisir le modèle selon les tags
-- Appel API vers Ollama (port 11434)
-
-**Exemple d'implémentation :**
-
-```javascript
-export async function generateQuestion(note) {
-	const model = note.aiTags.includes("claudeCode") ? "codellama" : "gemma2:2b";
-
-	const prompt = `Génère une question de révision basée sur cette note:
-Titre: ${note.title}
-Description: ${note.description}
-Génère une question courte et précise.`;
-
-	const response = await fetch("http://localhost:11434/api/generate", {
-		method: "POST",
-		headers: { "Content-Type": "application/json" },
-		body: JSON.stringify({ model, prompt }),
-	});
-
-	const data = await response.json();
-	return data.response;
-}
-```
-
----
-
-### 2. **Évaluation automatique des réponses** ❌
-
-**Problème :** L'évaluation est simulée (ligne 175 de [review.js](src/review.js#L175)) :
-
-```javascript
-const isCorrect = answer.length > 10; // ⚠️ Simulation basique
-```
-
-**Solution :** Envoyer la réponse à Ollama pour évaluation.
-
-**Implémentation à ajouter dans [ai.js](backend/lib/ai.js) :**
-
-```javascript
-export async function evaluateAnswer(question, userAnswer, correctContext) {
-	const prompt = `Question: ${question}
-Contexte correct: ${correctContext}
-Réponse de l'utilisateur: ${userAnswer}
-
-Évalue si la réponse est correcte. Réponds uniquement par "CORRECT" ou "INCORRECT" suivi d'une explication courte.`;
-
-	const response = await fetch("http://localhost:11434/api/generate", {
-		method: "POST",
-		headers: { "Content-Type": "application/json" },
-		body: JSON.stringify({ model: "gemma2:2b", prompt }),
-	});
-
-	const data = await response.json();
-	const isCorrect = data.response.toLowerCase().includes("correct");
-	return { isCorrect, feedback: data.response };
-}
-```
-
----
-
-### 3. **Page de statistiques** ❌
+### 1. **Page de statistiques** ❌
 
 **Manque :** Une page dédiée pour visualiser :
 
@@ -212,7 +209,7 @@ Réponse de l'utilisateur: ${userAnswer}
 
 ---
 
-### 4. **Gestion des notes** ⚠️ (Partiel)
+### 2. **Gestion des notes** ⚠️ (Partiel)
 
 **Existe :** Page [notes.html](pages/notes.html)
 
@@ -227,7 +224,7 @@ Réponse de l'utilisateur: ${userAnswer}
 
 ---
 
-### 5. **Tests automatisés** ⚠️
+### 3. **Tests automatisés** ⚠️
 
 **Existe :** Tests pour le scheduler [scheduler.test.js](backend/lib/scheduler.test.js)
 
@@ -304,36 +301,42 @@ if (testToastBtn) {
 
 ## 📈 Progression globale
 
-| Fonctionnalité              | État | Progression |
-| --------------------------- | ---- | ----------- |
-| Saisie des notes            | ✅   | 100%        |
-| Stockage local              | ✅   | 100%        |
-| Système de scheduling       | ✅   | 100%        |
-| Affichage cartes révision   | ✅   | 100%        |
-| Système de notifications    | ✅   | 100%        |
-| Toggle interrogations       | ✅   | 100%        |
-| API Backend                 | ✅   | 100%        |
-| **Intégration Ollama**      | ❌   | 0%          |
-| **Évaluation IA réponses**  | ❌   | 0%          |
-| **Gestion notes (CRUD UI)** | ⚠️   | 40%         |
-| **Page statistiques**       | ❌   | 0%          |
-| **Tests automatisés**       | ⚠️   | 20%         |
+| Fonctionnalité                   | État | Progression |
+| -------------------------------- | ---- | ----------- |
+| Saisie des notes                 | ✅   | 100%        |
+| Stockage local                   | ✅   | 100%        |
+| Système de scheduling            | ✅   | 100%        |
+| Affichage cartes révision        | ✅   | 100%        |
+| Système de notifications         | ✅   | 100%        |
+| Toggle interrogations            | ✅   | 100%        |
+| API Backend                      | ✅   | 100%        |
+| **Intégration Ollama**           | ✅   | 100%        |
+| **Génération questions IA**      | ✅   | 100%        |
+| **Évaluation IA réponses**       | ✅   | 100%        |
+| **Génération indices IA**        | ✅   | 100%        |
+| **Sélection modèle intelligent** | ✅   | 100%        |
+| **Gestion notes (CRUD UI)**      | ⚠️   | 40%         |
+| **Page statistiques**            | ❌   | 0%          |
+| **Tests automatisés**            | ⚠️   | 20%         |
+
+**Progression totale : ~85%** 🎉
 
 ---
 
 ## 🎯 Prochaines étapes recommandées
 
-### Priorité 1 : Intégration Ollama
+### ~~Priorité 1 : Intégration Ollama~~ ✅ FAIT !
 
-1. Compléter [ai.js](backend/lib/ai.js)
-2. Implémenter `generateQuestion(note)`
-3. Tester avec Ollama en local
+✅ [ai.js](backend/lib/ai.js) complété
+✅ Routes API implémentées
+✅ Frontend intégré
+✅ Documentation créée
 
-### Priorité 2 : Évaluation automatique
+### ~~Priorité 2 : Évaluation automatique~~ ✅ FAIT !
 
-1. Implémenter `evaluateAnswer()` dans [ai.js](backend/lib/ai.js)
-2. Remplacer la simulation dans [review.js](src/review.js#L175)
-3. Tester avec des vraies réponses
+✅ `evaluateAnswer()` implémenté
+✅ Simulation remplacée par vraie IA
+✅ Feedback intelligent intégré
 
 ### Priorité 3 : Page de gestion des notes
 

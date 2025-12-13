@@ -1,56 +1,72 @@
 [
   {
-    "id": 1765538465730,
+    "id": 1765612924801,
     "aiTags": [
-      "gemma3"
-    ],
-    "title": "Test",
-    "description": "Formation du Nord en hausse ",
-    "intensity": "chill",
-    "createdAt": "2025-12-12T11:21:05.730Z",
-    "reviewCount": 0,
-    "lastReviewed": null,
-    "lastInterval": 604800000,
-    "nextReviewAt": "2025-12-19T11:21:05.730Z"
-  },
-  {
-    "id": 1765541076220,
-    "aiTags": [
-      "claudeCode"
-    ],
-    "title": "Units testing ",
-    "description": "Triple A => Arrange, Act and Assert\nPossibilité de skip un test en plaçant un \"x\" avant it() (ou) describe() et un \"f\" pour \"focus\". Pour Vitest c'est it.skip() & it.only().",
-    "intensity": "intensive",
-    "createdAt": "2025-12-12T12:04:36.220Z",
-    "reviewCount": 0,
-    "lastReviewed": null,
-    "lastInterval": 21600000,
-    "nextReviewAt": "2025-12-12T21:54:35.124Z"
-  },
-  {
-    "id": 1765559644070,
-    "aiTags": [
-      "gemma3"
+      "hir0rameel/qwen-claude"
     ],
     "title": "JavaScript",
-    "description": "Les fonctions renvoient \"undefined\" par défaut.",
+    "description": "Les fonctions retourne \"undefined\" par défaut.",
     "intensity": "intensive",
-    "createdAt": "2025-12-12T17:14:04.070Z",
-    "reviewCount": 0,
-    "lastReviewed": null,
-    "lastInterval": 30000,
-    "nextReviewAt": "2025-12-12T17:14:34.070Z"
-  },
-  {
-    "id": 1765567740874,
-    "aiTags": [],
-    "title": "Test",
-    "description": "Gouvernement a annoncé mardi ",
-    "intensity": "intensive",
-    "createdAt": "2025-12-12T19:29:00.874Z",
+    "createdAt": "2025-12-13T08:02:04.801Z",
     "reviewCount": 0,
     "lastReviewed": null,
     "lastInterval": 21600000,
-    "nextReviewAt": "2025-12-13T01:29:00.874Z"
+    "nextReviewAt": "2025-12-13T21:37:44.569Z"
+  },
+  {
+    "id": 1765613180734,
+    "aiTags": [
+      "hir0rameel/qwen-claude"
+    ],
+    "title": "Units testing",
+    "description": "Triple A => Arrange, Act and Assert\nPossibilité de skip un test en plaçant un \"x\" avant it() (ou) describe() et un \"f\" pour \"focus\". Pour Vitest c'est it.skip() & it.only().",
+    "intensity": "intensive",
+    "createdAt": "2025-12-13T08:06:20.734Z",
+    "reviewCount": 0,
+    "lastReviewed": null,
+    "lastInterval": 21600000,
+    "nextReviewAt": "2025-12-13T14:06:20.734Z"
+  },
+  {
+    "id": 1765638882136,
+    "aiTags": [
+      "hir0rameel/qwen-claude"
+    ],
+    "title": "JS : Promise",
+    "description": "* **`try/catch`** : sert à intercepter les erreurs qui provoquent un **rejet de la Promise**, comme **perte de réseau, URL invalide, serveur inaccessible**, ou **JSON invalide**.\n* **`response.ok`** : sert à vérifier le **statut HTTP de la réponse**.\n\n  * `res.ok === true` → la réponse est dans la gamme 200–299\n  * `res.ok === false` → erreur côté serveur ou client (ex : 404, 500, 403…)\n\n---\n\nPetite précision : `fetch()` **ne rejette pas** la Promise si le serveur répond avec un 404 ou 500. C’est pour ça qu’on utilise **`res.ok`** pour détecter les erreurs HTTP.",
+    "intensity": "intensive",
+    "createdAt": "2025-12-13T15:14:42.136Z",
+    "reviewCount": 0,
+    "lastReviewed": null,
+    "lastInterval": 21600000,
+    "nextReviewAt": "2025-12-13T21:14:42.136Z"
+  },
+  {
+    "id": 1765639098503,
+    "aiTags": [
+      "hir0rameel/qwen-claude"
+    ],
+    "title": "CLI",
+    "description": "**Notes CLI : **\n- Il est possible de voir le contenu d'un dossier en particulier, à partir du dossier courant avec l'option _-F_.\n\nExemple : \n```bash\nls -F Desktop\n```\n\n- Dans la plupart des outils de ligne de commande, plusieurs options peuvent être combinées avec un seul - et aucun espace entre les options ; \n```bash\nls -F -a \n```\nEst équivalent à :\n```bash\nls -Fa.```",
+    "intensity": "intensive",
+    "createdAt": "2025-12-13T15:18:18.503Z",
+    "reviewCount": 0,
+    "lastReviewed": null,
+    "lastInterval": 21600000,
+    "nextReviewAt": "2025-12-13T21:18:18.503Z"
+  },
+  {
+    "id": 1765639275533,
+    "aiTags": [
+      "gpt-oss"
+    ],
+    "title": "Alimentation : Saumon",
+    "description": "Le saumon possède une chair riche en oméga-3, en protéines de haute qualité, en vitamines B et D, ainsi qu’en minéraux essentiels comme le sélénium et le potassium, ce qui en fait un poisson bénéfique à la fois pour la santé cardiovasculaire, le fonctionnement du cerveau et le maintien de la masse musculaire.",
+    "intensity": "intensive",
+    "createdAt": "2025-12-13T15:21:15.533Z",
+    "reviewCount": 0,
+    "lastReviewed": null,
+    "lastInterval": 21600000,
+    "nextReviewAt": "2025-12-13T21:21:15.533Z"
   }
 ]
