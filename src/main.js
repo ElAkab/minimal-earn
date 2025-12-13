@@ -1,4 +1,6 @@
 import "flowbite";
+import { initInterrogationsToggle } from "./config.js";
+import { showToast } from "./toast.js";
 
 // =====================
 // Sélection d'éléments
@@ -114,3 +116,33 @@ submitBtn.addEventListener("click", async (e) => {
 	// 	radioIntensive.checked
 	// );
 });
+
+// =====================
+// Initialisation
+// =====================
+// Initialiser le toggle des interrogations
+initInterrogationsToggle("toggle-interrogations");
+
+// =====================
+// Bouton de test pour les notifications toast
+// =====================
+const testToastBtn = document.getElementById("test-toast-btn");
+if (testToastBtn) {
+	const toastTypes = ["success", "error", "info", "warning"];
+	const toastMessages = [
+		"Note enregistrée avec succès ! 🎉",
+		"Erreur lors de la sauvegarde ❌",
+		"Votre prochaine révision est dans 2 heures ⏰",
+		"Attention : 5 révisions en attente ⚠️",
+	];
+
+	testToastBtn.addEventListener("click", () => {
+		// Choisir un type et message aléatoire
+		const randomIndex = Math.floor(Math.random() * toastTypes.length);
+		const type = toastTypes[randomIndex];
+		const message = toastMessages[randomIndex];
+
+		showToast(message, type);
+		console.log(`Toast test: ${type} - ${message}`);
+	});
+}

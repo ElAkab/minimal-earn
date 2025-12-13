@@ -3,14 +3,15 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>mind-stimulator</title>
+		<title>Home | Mind Stimulator</title>
 		<link rel="stylesheet" href="./src/style.css" />
 	</head>
 	<body class="bg-gray-800 text-white min-h-screen">
 		<header class="bg-black/25 flex justify-evenly items-center p-5 sticky">
 			<!-- Logo || Titre -->
 			<span class="text-3xl font-bold cursor-pointer"
-				>Minima <span class="text-blue-600">learn</span></span
+				><span class="text-blue-600">Mind </span>Stimulator</a
+			></span
 			>
 
 			<div class="flex gap-2">
@@ -29,18 +30,18 @@
 					</ul>
 				</nav>
 
-				<!-- Connexion / Inscription -->
 				<div class="font-bold">
-					<a
-						class="bg-white text-black p-1.5 rounded cursor-pointer hover:opacity-85 transition"
-						href="/sign"
-						>Inscription</a
-					>
-					<a
-						class="bg-blue-600 text-white p-1.5 rounded cursor-pointer hover:opacity-85 transition"
-						href="/login"
-						>Connexion</a
-					>
+					<label class="inline-flex items-center cursor-pointer">
+						<input
+							type="checkbox"
+							id="toggle-interrogations"
+							class="sr-only peer"
+						/>
+						<div
+							class="relative w-11 h-6 bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"
+						></div>
+						<span class="ml-3 text-sm font-medium">Interrogations</span>
+					</label>
 				</div>
 			</div>
 		</header>
@@ -126,6 +127,18 @@
 						class="mt-1.5 inline-block bg-linear-to-tr from-blue-500 via-white/5 to-gray-600 hover:from-gray-600 hover:to-blue-500 border cursor-pointer transition rounded p-2"
 					>
 						Noter
+					</button>
+
+					<!-- Bouton de test pour les notifications toast -->
+					<button
+						id="test-toast-btn"
+						type="button"
+						class="mt-3 w-full inline-flex items-center justify-center gap-2 text-purple-300 bg-transparent border-2 border-purple-500 hover:bg-purple-500 hover:text-white font-medium leading-5 rounded-base text-sm px-4 py-2.5 transition"
+					>
+						<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+						</svg>
+						Tester une notification
 					</button>
 
 					<!-- Dropdown menu -->
@@ -237,7 +250,7 @@
 						data-dismiss-target="#toast-success"
 						aria-label="Close"
 					>
-						<span class="sr-only">Close</span>
+						<!-- <span class="sr-only">Close</span> -->
 						<svg
 							class="w-5 h-5"
 							aria-hidden="true"
@@ -264,8 +277,7 @@
 					<hr class="my-3" />
 					<!-- Intérogation -->
 					<p class="text-center">
-						Lorem ipsum dolor sit amet, consectetur adipisicing elit. Fuga
-						assumenda nulla in accusamus a, adipisci doloribus maiores quod.
+						En programmation, que signifie le terme "Pointeur" et comment est-il utilisé dans la gestion de la mémoire ?
 					</p>
 
 					<div
@@ -274,8 +286,8 @@
 						<textarea
 							id="chat"
 							rows="1"
-							class="bg-neutral-primary-medium border border-default-medium text-heading text-sm rounded-l-full focus:ring-fg-disabled focus:border-fg-disabled block w-full px-3 py-2.5 placeholder:text-body resize-none"
-							placeholder="Your message..."
+							class="bg-neutral-primary-medium border border-default-medium text-heading text-sm rounded-l-full focus:ring-fg-disabled focus:border-fg-disabled block w-full px-6 py-2.5 placeholder:text-body resize-none"
+							placeholder="Ta putain de réponse..."
 						></textarea>
 						<button
 							type="submit"

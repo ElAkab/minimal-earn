@@ -54,6 +54,7 @@ router.get("/notes", async (req, res) => {
 });
 
 // Return notes due for review (respect config flag)
+// Censé être appelé après vérification du toggle côté client
 router.get("/due-notes", async (req, res) => {
 	try {
 		const cfg = await dataStore.readConfig();

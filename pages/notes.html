@@ -3,14 +3,15 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>minimal-earn</title>
+		<title>Notes | Mind Stimulator</title>
 		<link rel="stylesheet" href="../src/style.css" />
 	</head>
 	<body class="bg-gray-800 text-white min-h-screen">
 		<header class="bg-black/25 flex justify-evenly items-center p-5 sticky">
 			<!-- Logo || Titre -->
 			<a href="/" class="text-3xl font-bold cursor-pointer"
-				>Minima <span class="text-blue-600">learn</span></a
+				><span class="text-blue-600">Mind </span>Stimulator</a
+			></a
 			>
 
 			<div class="flex gap-2">
@@ -29,18 +30,18 @@
 					</ul>
 				</nav>
 
-				<!-- Connexion / Inscription -->
 				<div class="font-bold">
-					<a
-						class="bg-white text-black p-1.5 rounded cursor-pointer hover:opacity-85 transition"
-						href="/sign"
-						>Inscription</a
-					>
-					<a
-						class="bg-blue-600 text-white p-1.5 rounded cursor-pointer hover:opacity-85 transition"
-						href="/login"
-						>Connexion</a
-					>
+					<label class="inline-flex items-center cursor-pointer">
+						<input
+							type="checkbox"
+							id="toggle-interrogations"
+							class="sr-only peer"
+						/>
+						<div
+							class="relative w-11 h-6 bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"
+						></div>
+						<span class="ml-3 text-sm font-medium">Interrogations</span>
+					</label>
 				</div>
 			</div>
 		</header>

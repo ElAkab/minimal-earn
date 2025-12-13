@@ -26,5 +26,31 @@
     "lastReviewed": null,
     "lastInterval": 21600000,
     "nextReviewAt": "2025-12-12T21:54:35.124Z"
+  },
+  {
+    "id": 1765559644070,
+    "aiTags": [
+      "gemma3"
+    ],
+    "title": "JavaScript",
+    "description": "Les fonctions renvoient \"undefined\" par défaut.",
+    "intensity": "intensive",
+    "createdAt": "2025-12-12T17:14:04.070Z",
+    "reviewCount": 0,
+    "lastReviewed": null,
+    "lastInterval": 30000,
+    "nextReviewAt": "2025-12-12T17:14:34.070Z"
+  },
+  {
+    "id": 1765567740874,
+    "aiTags": [],
+    "title": "Test",
+    "description": "Gouvernement a annoncé mardi ",
+    "intensity": "intensive",
+    "createdAt": "2025-12-12T19:29:00.874Z",
+    "reviewCount": 0,
+    "lastReviewed": null,
+    "lastInterval": 21600000,
+    "nextReviewAt": "2025-12-13T01:29:00.874Z"
   }
 ]

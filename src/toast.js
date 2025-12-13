@@ -1,7 +1,7 @@
 // Système de notifications toast
 const toastContainer = document.createElement("div");
 toastContainer.id = "toast-container";
-toastContainer.className = "fixed top-4 right-4 z-50 flex flex-col gap-2";
+toastContainer.className = "fixed bottom-4 right-4 z-50 flex flex-col gap-2";
 document.body.appendChild(toastContainer);
 
 /**
@@ -10,7 +10,7 @@ document.body.appendChild(toastContainer);
  * @param {string} type - Type: 'success', 'error', 'info', 'warning'
  * @param {number} duration - Durée en ms (0 = permanent jusqu'à fermeture manuelle)
  */
-export function showToast(message, type = "info", duration = 3000) {
+export function showToast(message, type = "info") {
 	const toast = document.createElement("div");
 	toast.className = `flex items-center w-full max-w-xs p-4 rounded-lg shadow-lg text-white transform transition-all duration-300 translate-x-full opacity-0`;
 
@@ -55,11 +55,6 @@ export function showToast(message, type = "info", duration = 3000) {
 	// Bouton de fermeture
 	const closeBtn = toast.querySelector(".toast-close");
 	closeBtn.addEventListener("click", () => removeToast(toast));
-
-	// Auto-fermeture
-	if (duration > 0) {
-		setTimeout(() => removeToast(toast), duration);
-	}
 
 	return toast;
 }

@@ -1,4 +1,6 @@
 // Logique de la page notes.html
+import { initInterrogationsToggle } from "./config.js";
+
 const API_URL = "http://localhost:5000/api";
 
 let allNotes = [];
@@ -305,3 +307,6 @@ function formatDate(isoString) {
 // Initialisation
 // =====================
 fetchNotes();
+
+// Initialiser le toggle des interrogations
+initInterrogationsToggle("toggle-interrogations");

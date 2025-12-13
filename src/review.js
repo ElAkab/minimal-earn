@@ -1,5 +1,9 @@
 // Logique de révision avec IA
 import { showToast } from "./toast.js";
+import {
+	initInterrogationsToggle,
+	loadDueNotes as fetchDueNotes,
+} from "./config.js";
 
 const API_URL = "http://localhost:5000/api";
 
@@ -15,7 +19,6 @@ const disabledState = document.getElementById("disabled-state");
 const reviewCard = document.getElementById("review-card");
 const statsSection = document.getElementById("stats-section");
 
-const toggleInterrogations = document.getElementById("toggle-interrogations");
 const noteIntensityBadge = document.getElementById("note-intensity-badge");
 const noteTags = document.getElementById("note-tags");
 const noteContext = document.getElementById("note-context");
@@ -35,50 +38,13 @@ const closeReviewBtn = document.getElementById("close-review");
 // Initialisation
 // =====================
 async function init() {
-	await loadConfig();
+	// Initialiser le toggle avec callback pour recharger les notes
+	await initInterrogationsToggle("toggle-interrogations", async () => {
+		await loadDueNotes();
+	});
+
 	await loadDueNotes();
 }
-
-// =====================
-// Charger la config
-// =====================
-async function loadConfig() {
-	try {
-		const response = await fetch(`${API_URL}/config`);
-		const config = await response.json();
-		toggleInterrogations.checked = config.interrogationsEnabled;
-	} catch (error) {
-		console.error("Error loading config:", error);
-	}
-}
-
-// =====================
-// Toggle des interrogations
-// =====================
-toggleInterrogations.addEventListener("change", async (e) => {
-	try {
-		const response = await fetch(`${API_URL}/config`, {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({ interrogationsEnabled: e.target.checked }),
-		});
-
-		if (!response.ok) throw new Error("Erreur lors de la mise à jour");
-
-		showToast(
-			e.target.checked
-				? "Interrogations activées"
-				: "Interrogations désactivées",
-			"success"
-		);
-
-		await loadDueNotes();
-	} catch (error) {
-		console.error("Error toggling interrogations:", error);
-		showToast("Erreur lors de la mise à jour", "error");
-		e.target.checked = !e.target.checked;
-	}
-});
 
 // =====================
 // Charger les notes dues
@@ -87,8 +53,9 @@ async function loadDueNotes() {
 	showState("loading");
 
 	try {
-		const response = await fetch(`${API_URL}/due-notes`);
-		const data = await response.json();
+		const data = await fetchDueNotes();
+
+		console.log("Due notes data:", data);
 
 		if (!data.enabled) {
 			showState("disabled");
@@ -121,13 +88,18 @@ async function loadNextReview() {
 		return;
 	}
 
-	currentNote = dueNotes[0];
+	// Parcourir les notes et en prendre une au hasard
+	const randomIndex = Math.floor(Math.random() * dueNotes.length);
+
+	// Afficher la prochaine note
+	currentNote = dueNotes[randomIndex];
 	showState("loading");
 
 	try {
 		// Récupérer le prompt généré par l'IA
 		const response = await fetch(`${API_URL}/prompt/${currentNote.id}`);
-		if (!response.ok) throw new Error("Erreur lors de la récupération du prompt");
+		if (!response.ok)
+			throw new Error("Erreur lors de la récupération du prompt");
 
 		const data = await response.json();
 		currentPrompt = data.prompt;
@@ -221,7 +193,11 @@ dontKnowBtn.addEventListener("click", async () => {
 // Indice
 // =====================
 showHintBtn.addEventListener("click", () => {
-	showToast("Indice : Relisez attentivement le contexte de la note", "info", 5000);
+	showToast(
+		"Indice : Relisez attentivement le contexte de la note",
+		"info",
+		5000
+	);
 	noteContext.classList.remove("hidden");
 });
 
@@ -279,7 +255,8 @@ function showFeedback(correct, answer) {
 	feedbackSection.classList.remove("hidden");
 
 	if (correct) {
-		feedbackSection.className = "mt-6 p-4 rounded bg-green-900 border border-green-600";
+		feedbackSection.className =
+			"mt-6 p-4 rounded bg-green-900 border border-green-600";
 		feedbackSection.innerHTML = `
 			<div class="flex items-start gap-3">
 				<svg class="w-6 h-6 text-green-400 shrink-0" fill="currentColor" viewBox="0 0 20 20">
@@ -293,7 +270,8 @@ function showFeedback(correct, answer) {
 		`;
 		showToast("Réponse correcte ! ✅", "success");
 	} else {
-		feedbackSection.className = "mt-6 p-4 rounded bg-red-900 border border-red-600";
+		feedbackSection.className =
+			"mt-6 p-4 rounded bg-red-900 border border-red-600";
 		feedbackSection.innerHTML = `
 			<div class="flex items-start gap-3">
 				<svg class="w-6 h-6 text-red-400 shrink-0" fill="currentColor" viewBox="0 0 20 20">
@@ -306,9 +284,7 @@ function showFeedback(correct, answer) {
 						currentNote.description
 							? `<div class="p-3 bg-gray-800 rounded mt-2">
 								<p class="text-sm font-medium text-gray-300">Rappel :</p>
-								<p class="text-sm text-gray-400 mt-1">${escapeHtml(
-									currentNote.description
-								)}</p>
+								<p class="text-sm text-gray-400 mt-1">${escapeHtml(currentNote.description)}</p>
 							</div>`
 							: ""
 					}
