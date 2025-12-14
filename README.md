@@ -1,228 +1,185 @@
-# 📚 Explication technique – GUI & logique
+# 📚 Mind Stimulator
 
-## 🎯 Concept clé : le “Toast” = Carte d’interrogation
+> Application d'apprentissage par cartes mémo interactives avec IA locale (Ollama)
 
-Dans ce projet, un **toast** n’est pas une simple notification :
-c’est une **carte d’interrogation interactive** qui :
-
-- apparaît de manière "surprise",
-- reste affichée jusqu’à interaction,
-- contient une question générée par l’IA,
-- permet de répondre, demander un indice, ou indiquer qu’on ne sait pas.
+[![Tests](https://img.shields.io/badge/tests-16%2F16-success)](./DOCUMENTATION.md#-tests)
+[![Ollama](https://img.shields.io/badge/Ollama-3%20models-blue)](./DOCUMENTATION.md#-intégration-ia)
 
 ---
 
-# 🎨 Interface utilisateur (GUI) – Logique complète
+## 🎯 Concept
 
-## 📝 Page 1 : `index.html` — Création de notes
+Mind Stimulator est une application d'apprentissage qui combine :
+- **Cartes mémo interactives** (comme Anki)
+- **IA locale** (Ollama) pour générer questions et évaluer réponses
+- **Révision espacée** adaptative selon tes performances
 
-### Layout
-
-```
-┌─────────────────────────────────────────────┐
-│ Header (Logo + Navigation + Toggle)        │
-├───────────────────┬─────────────────────────┤
-│ Formulaire (50%)  │ Prévisualisation (50%)  │
-│                   │                          │
-│ [Prog | Autre]    │  ┌─────────────────┐    │
-│ Titre: [____]     │  │ Carte exemple   │    │
-│ Desc:  [____]     │  │                 │    │
-│ Priorité: [v]     │  │ Question...     │    │
-│ [Noter]           │  │ [Répondre]      │    │
-│                   │  └─────────────────┘    │
-└───────────────────┴─────────────────────────┘
-```
-
-### Workflow
-
-- Choix du modèle IA (`claudeCode` ou `gemma3`)
-- Saisie du titre + description
-- Choix de l’intensité (`chill`, `moderate`, `intensive`)
-- Clic sur **Noter**
-- La note est envoyée au backend et sauvegardée
+Un **"toast"** = une **carte d'interrogation interactive** qui :
+- Apparaît selon l'algorithme de révision espacée
+- Contient une question générée par l'IA
+- Permet de répondre, demander un indice, ou indiquer qu'on ne sait pas
+- S'adapte à tes résultats
 
 ---
 
-## 🗂️ Page 2 : `pages/notes.html` — Gestion des notes
+## 🚀 Démarrage rapide (5 minutes)
 
-### Layout
-
-```
-┌─────────────────────────────────────────────┐
-│ Header (Navigation + Toggle)               │
-├─────────────────────────────────────────────┤
-│ Filtres: [Tous] [claudeCode] [gemma3]     │
-├─────────────────────────────────────────────┤
-│ ┌─────────┐ ┌─────────┐ ┌─────────┐       │
-│ │ Note 1  │ │ Note 2  │ │ Note 3  │       │
-│ │ [Edit]  │ │ [Edit]  │ │ [Edit]  │       │
-│ │ [Del]   │ │ [Del]   │ │ [Del]   │       │
-│ └─────────┘ └─────────┘ └─────────┘       │
-└─────────────────────────────────────────────┘
+### 1. Installer Ollama
+```bash
+curl -fsSL https://ollama.com/install.sh | sh
+ollama pull gpt-oss            # Modèle principal (~12GB)
+ollama pull hir0rameel/qwen-claude  # Modèle code (~5GB)
+ollama serve                   # Laisse tourner
 ```
 
-### Fonctionnalités
+### 2. Installer et démarrer
+```bash
+pnpm install
+cd backend && pnpm install && pnpm start  # Terminal 1
+# Retour à la racine
+pnpm dev                                  # Terminal 2
+```
 
-- Affichage en grille
-- Filtrage par modèle IA
-- Édition via modal
-- Suppression avec confirmation
+### 3. Tester
+Ouvre **http://localhost:5173** et clique sur **"🧪 Tester l'IA"**
+
+✅ Tu devrais voir : "Question générée avec succès en X.XXs"
 
 ---
 
-## 🔁 Page 3 : `pages/review.html` — Révisions
+## 📖 Documentation complète
 
-### État 1 : Interrogations désactivées
+👉 **[DOCUMENTATION.md](./DOCUMENTATION.md)** - Guide complet (16 KB)
 
-```
-┌─────────────────────────────────────────────┐
-│ ⚠️  Interrogations désactivées              │
-│ Active le toggle pour commencer.            │
-└─────────────────────────────────────────────┘
-```
-
-### État 2 : Aucune révision à faire
-
-```
-┌─────────────────────────────────────────────┐
-│ 🎉 Aucune révision pour le moment !        │
-│ Reviens plus tard.                          │
-└─────────────────────────────────────────────┘
-```
-
-### État 3 : Carte de révision active
-
-```
-┌─────────────────────────────────────────────┐
-│ [X]                     [moderate] [prog]   │
-│                                             │
-│ 📝 Titre de la note                         │
-│                                             │
-│ ❓ Question générée par l'IA :              │
-│ "Quelle est la différence entre..."        │
-│                                             │
-│ ┌─────────────────────────────────┐        │
-│ │ Ta réponse...                   │ [Send] │
-│ └─────────────────────────────────┘        │
-│                                             │
-│ [Je sais pas] [Indice] [Contexte]          │
-│                                             │
-│ Stats: ✅ 5 | ❌ 2 | Restantes: 3          │
-└─────────────────────────────────────────────┘
-```
-
-### Workflow
-
-- Chargement des notes dont `nextReviewAt ≤ maintenant`
-- Affichage de la carte actuelle
-- Actions possibles :
-
-  - **Répondre** → évaluation + feedback + carte suivante
-  - **Je sais pas** → incorrect + carte suivante
-  - **Indice** → contexte court
-  - **Contexte** → texte complet
-  - **Fermer** (`X`) → passe à la suivante
+**Contenu :**
+- 🏗️ Architecture détaillée
+- 🤖 Intégration IA (Ollama)
+- ⚙️ Configuration et variables d'environnement
+- 🧪 Tests unitaires (16 tests)
+- 🐛 Dépannage complet
+- 📝 API Reference
+- 🔧 Résolution timeout Ollama
 
 ---
 
-# 🧠 Algorithme de révision espacée
+## 🎯 Fonctionnalités
 
-### Intervalle initial selon intensité
+### ✅ Implémenté
+- ✅ Création de notes avec métadonnées
+- ✅ Génération de questions par IA (Ollama)
+- ✅ Évaluation automatique des réponses
+- ✅ Génération d'indices intelligents
+- ✅ Gestion des notes (CRUD)
+- ✅ Algorithme de révision espacée
+- ✅ Sélection automatique du modèle IA
+- ✅ Tests unitaires (16/16 passés)
+- ✅ Gestion robuste des erreurs
+- ✅ Logs détaillés (backend + frontend)
 
-```
-Chill      : 7 jours
-Moderate   : 1 jour
-Intensive  : 6 heures
-```
-
-### Adaptation après révision
-
-```
-Correct   (✅) : intervalle × 1.5   (max : 1 an)
-Incorrect (❌) : intervalle × 0.6   (min : 50% du base)
-```
-
-### Exemple (mode Moderate)
-
-- J0 : création → +1 jour
-- J1 : révision ✅ → 1 × 1.5 = 1.5 j
-- J2.5 : révision ✅ → 1.5 × 1.5 = 2.25 j
-- J4.75 : révision ❌ → 2.25 × 0.6 = 1.35 j
-- J6.1 : révision ✅ → 1.35 × 1.5 = 2 j
-
-➡️ Les notes maîtrisées s’espacent.
-➡️ Les plus difficiles reviennent plus souvent.
+### 🚧 En cours / Prévu
+- 🚧 Page de révision interactive
+- 🚧 Notifications toast automatiques
+- 🚧 Statistiques détaillées
+- 🚧 Export/import Markdown
 
 ---
 
-# 🔗 Flux de données complet
+## 🛠️ Stack technique
 
+**Frontend :** Vite + TailwindCSS 4 + Flowbite + Vanilla JS  
+**Backend :** Node.js + Express + Ollama SDK  
+**IA :** Ollama (gpt-oss 20B, qwen-claude 8B, gemma3 4B)  
+**Tests :** Vitest (16 tests unitaires)  
+**Storage :** JSON file-based
+
+---
+
+## 🧪 Tests
+
+```bash
+pnpm test --run        # Tous les tests
+cd backend && pnpm test --run  # Tests backend uniquement
 ```
-┌─────────────────────────────────────────────────────┐
-│                    FRONTEND                          │
-├─────────────────────────────────────────────────────┤
-│                                                      │
-│  index.html          notes.html        review.html    │
-│      │                   │                  │          │
-│      ├─ main.js          ├─ notes.js       ├─ review.js
-│      └─ config.js        └─ config.js      └─ config.js
-│                                                      │
-│                     toast.js (partagé)               │
-└──────────────────────┬──────────────────────────────┘
-                       │ HTTP/REST API
-                       │
-┌──────────────────────▼──────────────────────────────┐
-│                    BACKEND                           │
-├─────────────────────────────────────────────────────┤
-│                                                      │
-│  server.js  →  routeHandlers.js                      │
-│                       │                              │
-│                       ├─→ dataStore.js               │
-│                       ├─→ scheduler.js               │
-│                       └─→ ai.js                      │
-│                                                      │
-└──────────────────────┬──────────────────────────────┘
-                       │ File System
-                       │
-┌──────────────────────▼──────────────────────────────┐
-│                     DATA                             │
-├─────────────────────────────────────────────────────┤
-│                                                      │
-│  backend/data/notes.json    (toutes les notes)       │
-│  backend/data/config.json   (toggle + settings)      │
-│                                                      │
-└──────────────────────────────────────────────────────┘
+
+**Résultats actuels :**
+- ✅ 9/9 tests IA (`ai.test.js`)
+- ✅ 7/7 tests utilitaires (`utils.test.js`)
+- ✅ Tests DataStore validés
+
+---
+
+## 🐛 Problèmes courants
+
+### "Ollama timeout"
+✅ **Résolu** : Le timeout est désactivé par défaut (les gros modèles prennent 60-120s)
+
+[Voir détails dans DOCUMENTATION.md](./DOCUMENTATION.md#problème--ollama-timeout)
+
+### Le serveur ne démarre pas
+```bash
+lsof -i :5000          # Vérifier le port
+kill -9 <PID>          # Tuer le processus
+cd backend && pnpm start  # Redémarrer
 ```
 
 ---
 
-# 🎯 Points forts du projet
+## 📁 Structure
 
-- ✔️ Architecture claire (frontend / backend / data)
-- ✔️ Modularité
-- ✔️ API REST propre
-- ✔️ Algorithme de révision espacée
-- ✔️ UI pensée pour l’usage réel (toggle, feedback, stats)
-- ✔️ Stockage JSON simple à débugger
-
----
-
-# 🔮 Prochaines étapes suggérées
-
-- Intégrer Ollama pour la vraie génération + évaluation
-- Génération automatique de questions
-- Page de statistiques avancées
-- Export / import en Markdown
-- Mode hors-ligne via Service Worker
+```
+minimal-earn/
+├── backend/           # Serveur Express + IA
+│   ├── lib/          # Modules (ai, dataStore, scheduler)
+│   ├── routes/       # API endpoints
+│   └── data/         # Stockage JSON
+├── src/              # Frontend (Vite)
+│   ├── main.js       # Page d'accueil
+│   ├── notes.js      # Gestion notes
+│   └── config.js     # Configuration
+├── index.html        # Page principale
+└── DOCUMENTATION.md  # Guide complet
+```
 
 ---
 
-# 📝 Résumé simplifié
+## 🎓 Apprendre avec ce projet
 
-Ton projet en **3 phrases** :
+Ce projet est conçu comme **support d'apprentissage** :
+- 📝 Code commenté et structuré
+- 🧪 Tests unitaires comme exemples
+- 📚 Documentation détaillée
+- 🔍 Logs explicites partout
+- ✅ Bonnes pratiques appliquées
 
-1. Tu crées des notes avec un niveau d’intensité.
-2. L’application te pose des questions à intervalles réguliers.
-3. Tes réponses ajustent la fréquence des futures révisions.
+---
 
-➡️ C’est comme **Anki**, mais **local**, **simple**, **personnalisé**, et **boosté par une IA locale**. 🚀
+## 🤝 Commandes utiles
+
+```bash
+# Développement
+pnpm dev              # Frontend (Vite)
+cd backend && pnpm start  # Backend (avec watch)
+
+# Tests
+pnpm test --run       # Lancer tous les tests
+./test-api.sh         # Test intégration API
+
+# Ollama
+ollama list           # Modèles installés
+ollama pull <model>   # Télécharger un modèle
+ollama serve          # Démarrer le serveur
+
+# Vérifications
+curl http://localhost:5000/api/config  # Backend OK ?
+curl http://localhost:11434/api/tags   # Ollama OK ?
+```
+
+---
+
+## 📄 Licence
+
+Projet personnel d'apprentissage - Usage libre
+
+---
+
+**📖 Consulte [DOCUMENTATION.md](./DOCUMENTATION.md) pour le guide complet !**

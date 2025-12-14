@@ -1,6 +1,13 @@
 import "flowbite";
 import { initInterrogationsToggle } from "./config.js";
 import { showToast } from "./toast.js";
+import { showErrorModal, withErrorHandling } from "./errorHandler.js";
+import { showLoadingOverlay, hideLoadingOverlay } from "./loader.js";
+
+// =====================
+// Imports
+// =====================
+import { renderMarkdown, stylizeMarkdown } from "./markdown.js";
 
 // =====================
 // Sélection d'éléments
@@ -11,6 +18,7 @@ let noteDescInput = document.getElementById("notes-desc");
 let radioChill = document.getElementById("helper-radio-4");
 let radioModerate = document.getElementById("helper-radio-5");
 let radioIntensive = document.getElementById("helper-radio-6");
+let radioSoon = document.getElementById("helper-radio-7");
 let submitBtn = document.getElementById("submit-form");
 
 // Choix de l'IA
@@ -77,7 +85,9 @@ submitBtn.addEventListener("click", async (e) => {
 	// =====================
 	// Gestion des radios
 	// =====================
-	if (radioChill.checked) {
+	if (radioSoon.checked) {
+		payload.intensity = "soon";
+	} else if (radioChill.checked) {
 		payload.intensity = "chill";
 	} else if (radioModerate.checked) {
 		payload.intensity = "moderate";
@@ -120,8 +130,22 @@ submitBtn.addEventListener("click", async (e) => {
 // =====================
 // Fonction pour créer la carte d'interrogation interactive
 // =====================
-function createReviewCard(note, question, model) {
+// Fonction pour créer une carte d'interrogation
+// @param {Object} note - Note source
+// @param {string} question - Question générée
+// @param {string} model - Modèle IA utilisé
+// @param {boolean} cached - Si la question provient du cache (défaut: false)
+// @param {string} generatedAt - Date de génération (optionnel)
+// =====================
+function createReviewCard(
+	note,
+	question,
+	model,
+	cached = false,
+	generatedAt = null
+) {
 	const intensityColors = {
+		soon: "bg-purple-500",
 		chill: "bg-blue-500",
 		moderate: "bg-amber-500",
 		intensive: "bg-red-500",
@@ -138,34 +162,65 @@ function createReviewCard(note, question, model) {
 		note.intensity || "moderate"
 	}</span>`;
 
-	// Créer l'overlay et la carte avec animations toast
+	// Badge cache (si question pré-générée)
+	const cacheBadge = cached
+		? `<span class="inline-flex items-center gap-1 bg-green-500/20 text-green-400 text-xs px-3 py-1 rounded-full border border-green-500/30 font-medium animate-pulse">
+				<svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+					<path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z"/>
+					<path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"/>
+				</svg>
+				Pré-générée ⚡
+			</span>`
+		: `<span class="inline-flex items-center gap-1 bg-blue-500/20 text-blue-400 text-xs px-3 py-1 rounded-full border border-blue-500/30 font-medium">
+				<svg class="w-3 h-3 animate-spin" fill="none" viewBox="0 0 24 24">
+					<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+					<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+				</svg>
+				Générée à la demande
+			</span>`;
+
+	// Créer l'overlay et la carte avec animations améliorées
 	const overlay = document.createElement("div");
 	overlay.className =
-		"fixed bottom-4 right-4 z-50 transform translate-x-4 transition-transform duration-300 ease-out";
-	// overlay.style.pointerEvents = "auto";
-	overlay.style.transition = "transform 300ms ease-in-out";
+		"fixed bottom-4 right-4 z-50 transform translate-x-full transition-all duration-500 ease-out";
 	overlay.innerHTML = `
-		<div class="review-card flex flex-col bg-gray-800 rounded-lg shadow-xl max-w-[605px] h-[672px] transform transition-all duration-300 scale-95 relative opacity-0">
+		<div class="review-card flex flex-col bg-linear-to-br from-gray-800 to-gray-900 rounded-xl shadow-2xl max-w-[605px] h-[672px] transform transition-all duration-500 scale-90 opacity-0 border border-gray-700/50">
 			<!-- Header -->
-			<div class="p-6 border-b border-gray-700 shrink-0">
-				<div class="flex items-start justify-between mb-4">
-					<div class="w-full flex items-center">
+			<div class="p-6 border-b border-gray-700 shrink-0 bg-linear-to-r from-gray-800/50 to-gray-900/50 backdrop-blur-sm">
+				<div class="flex items-start justify-between mb-3">
+					<div class="flex items-center gap-2 flex-wrap">
 						${intensityBadge}
-						${
-							note.title
-								? `<h3 class="text-3xl font-semibold text-white text-center mx-auto mb-2">${escapeHtml(
-										note.title
-								  )}</h3>`
-								: ""
-						}
+						${cacheBadge}
 					</div>
-					<button type="button" class="close-card text-gray-400 hover:text-white cursor-pointer">
+					<button type="button" class="close-card text-gray-400 hover:text-white transition-all duration-200 hover:rotate-90 cursor-pointer">
 						<svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
 							<path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
 						</svg>
 					</button>
 				</div>
-				<p class="text-sm text-gray-400">Modèle : ${escapeHtml(model)}</p>
+				${
+					note.title
+						? `<h3 class="text-2xl font-bold mb-2 bg-linear-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">${escapeHtml(
+								note.title
+						  )}</h3>`
+						: ""
+				}
+				<div class="flex items-center gap-2 text-xs text-gray-400">
+					<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+						<path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"/>
+					</svg>
+					<span>Modèle : ${escapeHtml(model)}</span>
+					${
+						generatedAt
+							? `<span class="opacity-60">• ${new Date(
+									generatedAt
+							  ).toLocaleString("fr-FR", {
+									dateStyle: "short",
+									timeStyle: "short",
+							  })}</span>`
+							: ""
+					}
+				</div>
 			</div>
 
 			<!-- Zone scrollable (Question + Contexte) -->
@@ -173,13 +228,17 @@ function createReviewCard(note, question, model) {
 				<!-- Question -->
 				<div class="p-6 border-b border-gray-700">
 					<h4 class="text-sm font-medium text-gray-400 mb-2">Question :</h4>
-					<p class="text-white text-base leading-relaxed">${escapeHtml(question)}</p>
+					<div class="text-white text-base leading-relaxed markdown-content">${renderMarkdown(
+						question
+					)}</div>
 				</div>
 
 				<!-- Contexte (caché par défaut) -->
 				<div class="context-section hidden p-6 bg-gray-900/50 border-b border-gray-700">
 					<h4 class="text-sm font-medium text-gray-400 mb-2"><i>Honte à toi... :</i></h4>
-					<p class="text-gray-300 text-sm">${escapeHtml(note.description)}</p>
+					<div class="text-gray-300 text-sm markdown-content">${renderMarkdown(
+						note.description
+					)}</div>
 				</div>
 			</div>
 
@@ -254,31 +313,43 @@ function createReviewCard(note, question, model) {
 	const contextSection = overlay.querySelector(".context-section");
 	const feedbackSection = overlay.querySelector(".feedback-section");
 
-	// Fermer la carte avec animation
+	// Fermer la carte avec animation améliorée
 	const removeCard = async () => {
 		const card = overlay.querySelector(".review-card");
 		if (card) {
-			card.classList.add("translate-x-full");
+			card.classList.remove("scale-100", "opacity-100");
+			card.classList.add("scale-90", "opacity-0");
 		}
+		overlay.classList.add("translate-x-full");
 		setTimeout(() => {
 			if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
-		}, 1000);
-
-		// Nettoyer : supprimer la note de test
-		await fetch(`http://localhost:5000/api/notes/${note.id}`, {
-			method: "DELETE",
-		});
-		console.log("🗑️ Note de test supprimée");
+		}, 500);
 	};
 
 	closeBtn.addEventListener("click", removeCard);
 
-	// Afficher l'animation d'entrée
+	// Afficher l'animation d'entrée améliorée
 	setTimeout(() => {
-		overlay.classList.remove("opacity-0");
+		overlay.classList.remove("translate-x-full");
 		const card = overlay.querySelector(".review-card");
 		if (card) {
-			card.classList.remove("scale-95", "opacity-0");
+			card.classList.remove("scale-90", "opacity-0");
+			card.classList.add("scale-100", "opacity-100");
+		}
+
+		// Appliquer les styles Tailwind au contenu Markdown
+		overlay
+			.querySelectorAll(".markdown-content")
+			.forEach((el) => stylizeMarkdown(el));
+
+		// Animation de "pop" pour les badges si c'est une question en cache
+		if (cached) {
+			const cacheBadgeEl = card.querySelector(".animate-pulse");
+			if (cacheBadgeEl) {
+				setTimeout(() => {
+					cacheBadgeEl.classList.remove("animate-pulse");
+				}, 2000);
+			}
 		}
 	}, 10);
 
@@ -312,6 +383,16 @@ function createReviewCard(note, question, model) {
 			const evaluation = await evalResponse.json();
 
 			console.log("📊 Évaluation:", evaluation);
+
+			// Enregistrer la révision dans le backend
+			await fetch("http://localhost:5000/api/review-note", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					id: note.id,
+					correct: evaluation.isCorrect,
+				}),
+			});
 
 			// Afficher le feedback
 			feedbackSection.classList.remove("hidden");
@@ -468,61 +549,71 @@ function escapeHtml(text) {
 initInterrogationsToggle("toggle-interrogations");
 
 // =====================
-// Bouton de test de l'IA (interrogation)
+// Bouton de test de l'IA (interrogation aléatoire)
 // =====================
 const testToastBtn = document.getElementById("test-toast-btn");
 if (testToastBtn) {
 	testToastBtn.addEventListener("click", async () => {
-		console.log("🚀 Démarrage du test IA...");
-		showToast("🤖 Génération d'une interrogation par l'IA...");
+		console.log("🚀 Démarrage du test d'interrogation aléatoire...");
+		showToast("🎲 Sélection d'une note aléatoire...");
+
+		const startTime = performance.now();
 
 		try {
-			// 1. Créer une note de test temporaire
-			const testNote = {
-				aiTags: ["hir0rameel/qwen-claude"],
-				title: "Test JavaScript",
-				description:
-					"En JavaScript, les fonctions renvoient 'undefined' par défaut si aucun return n'est spécifié.",
-				intensity: "moderate",
-			};
+			// 1. Récupérer toutes les notes
+			console.log("📥 Récupération de toutes les notes...");
+			const notesResponse = await fetch("http://localhost:5000/api/notes");
 
-			console.log("📝 Note de test:", testNote);
-
-			// 2. Créer la note sur le serveur
-			console.log("📤 Envoi de la note au serveur...");
-			const createResponse = await fetch(
-				"http://localhost:5000/api/generate-note",
-				{
-					method: "POST",
-					headers: { "Content-Type": "application/json" },
-					body: JSON.stringify(testNote),
-				}
-			);
-
-			if (!createResponse.ok) {
-				const errorText = await createResponse.text();
-				console.error("❌ Erreur création note:", errorText);
-				throw new Error("Erreur création note");
+			if (!notesResponse.ok) {
+				throw new Error("Erreur lors de la récupération des notes");
 			}
 
-			const { note } = await createResponse.json();
-			console.log("✅ Note créée:", note);
+			const { notes } = await notesResponse.json();
+			console.log(`📚 ${notes.length} notes disponibles`);
 
-			// 3. Générer une interrogation avec l'IA
-			console.log("🤖 Demande de génération de question à l'IA...");
-			showToast("⏳ Génération de la question par l'IA...");
+			if (notes.length === 0) {
+				throw new Error("Aucune note disponible. Créez d'abord une note !");
+			}
+
+			// 2. Choisir une note aléatoire
+			const randomNote = notes[Math.floor(Math.random() * notes.length)];
+			console.log("🎲 Note sélectionnée:", randomNote);
+
+			// 3. Générer une interrogation (utilise automatiquement le cache si disponible)
+			console.log("🤖 Demande de question (cache ou génération)...");
+			const loadingToast = showToast(
+				"⏳ Chargement de la question...",
+				"info",
+				10000
+			);
 
 			const questionResponse = await fetch(
-				`http://localhost:5000/api/generate-question/${note.id}`
+				`http://localhost:5000/api/generate-question/${randomNote.id}`
 			);
 
 			if (!questionResponse.ok) {
 				const errorData = await questionResponse.json().catch(() => ({}));
 				console.error("❌ Erreur génération question:", errorData);
-				throw new Error(errorData.error || "Erreur génération question");
+
+				// Gestion d'erreur élégante avec fallback
+				if (errorData.message && errorData.message.includes("timeout")) {
+					throw new Error(
+						"⏱️ Timeout: L'IA met trop de temps à répondre. Réessayez ou vérifiez qu'Ollama est démarré."
+					);
+				} else if (errorData.message && errorData.message.includes("model")) {
+					throw new Error(
+						"🤖 Modèle IA introuvable. Vérifiez que les modèles sont installés avec 'ollama pull'."
+					);
+				} else {
+					throw new Error(
+						errorData.error || errorData.message || "Erreur génération question"
+					);
+				}
 			}
 
-			const { question, model } = await questionResponse.json();
+			const { question, model, cached, generatedAt } =
+				await questionResponse.json();
+			const loadTime = ((performance.now() - startTime) / 1000).toFixed(2);
 
 			// Vérifier si la question est valide
 			if (!question || question.trim() === "") {
@@ -530,70 +621,45 @@ if (testToastBtn) {
 				throw new Error("L'IA n'a pas pu générer de question");
 			}
 
-			console.log("🤖 IA utilisée:", model);
-			console.log("❓ Interrogation générée:", question);
-			console.log("✅ Test IA réussi !");
+			console.log(`🤖 Modèle utilisé: ${model}`);
+			console.log(
+				`💾 Question depuis cache: ${cached ? "Oui ⚡" : "Non (générée)"}`
+			);
+			console.log(`⏱️ Temps de chargement: ${loadTime}s`);
+			console.log("❓ Question:", question);
+			console.log("✅ Chargement réussi !");
 
-			// 4. Afficher la carte d'interrogation
-			const reviewCard = createReviewCard(note, question, model);
+			// Afficher toast de succès avec info cache
+			if (cached) {
+				showToast(
+					`⚡ Question chargée instantanément (${loadTime}s)`,
+					"success",
+					2000
+				);
+			} else {
+				showToast(`✅ Question générée (${loadTime}s)`, "success", 2000);
+			}
+
+			// 4. Afficher la carte d'interrogation avec info cache
+			const reviewCard = createReviewCard(
+				randomNote,
+				question,
+				model,
+				cached,
+				generatedAt
+			);
 			document.body.appendChild(reviewCard);
 		} catch (error) {
 			console.error("❌ Erreur test IA:", error);
-			console.error("Stack trace:", error.stack);
 
-			// Afficher une modal d'erreur
-			const errorModal = document.createElement("div");
-			errorModal.className =
-				"fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4 opacity-0";
-			errorModal.style.transition = "opacity 300ms ease-in-out";
-			errorModal.innerHTML = `
-				<div class="error-card bg-gray-800 rounded-lg shadow-xl max-w-md w-full p-6 transform transition-all duration-300 scale-95 opacity-0">
-					<div class="flex items-start gap-3 mb-4">
-						<svg class="w-8 h-8 text-red-400 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-							<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
-						</svg>
-						<div class="flex-1">
-							<h3 class="text-lg font-bold text-red-400 mb-2">❌ Erreur</h3>
-							<p class="text-sm text-gray-300 mb-4">${escapeHtml(error.message)}</p>
-							${
-								error.message.includes("timeout") ||
-								error.message.includes("Ollama")
-									? '<p class="text-xs text-gray-400 mb-2">L\'IA Ollama ne répond pas. Vérifiez qu\'Ollama est bien démarré avec <code class="bg-gray-900 px-1 rounded">ollama serve</code></p>'
-									: '<p class="text-xs text-gray-400 mb-2">Une erreur s\'est produite lors de la génération de la question.</p>'
-							}
-							<details class="text-xs text-gray-500 mt-2">
-								<summary class="cursor-pointer hover:text-gray-400">Détails techniques</summary>
-								<pre class="mt-2 p-2 bg-gray-900 rounded overflow-x-auto">${escapeHtml(
-									error.stack || "Aucune stack trace disponible"
-								)}</pre>
-							</details>
-						</div>
-					</div>
-					<button class="w-full px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition">
-						Fermer
-					</button>
-				</div>
-			`;
-
-			document.body.appendChild(errorModal);
-
-			// Animation d'entrée
-			setTimeout(() => {
-				errorModal.classList.remove("opacity-0");
-				const card = errorModal.querySelector(".error-card");
-				if (card) card.classList.remove("scale-95", "opacity-0");
-			}, 10);
-
-			// Fermeture
-			const closeBtn = errorModal.querySelector("button");
-			closeBtn.addEventListener("click", () => {
-				const card = errorModal.querySelector(".error-card");
-				if (card) card.classList.add("scale-95", "opacity-0");
-				errorModal.classList.add("opacity-0");
-				setTimeout(() => {
-					if (errorModal.parentNode)
-						errorModal.parentNode.removeChild(errorModal);
-				}, 300);
+			// Afficher modal d'erreur élégante avec option de retry
+			showErrorModal(error, {
+				title: "Erreur de chargement",
+				onRetry: async () => {
+					// Retry en rechargeant la page ou en relançant la fonction
+					location.reload();
+				},
+				retryText: "Recharger la page",
 			});
 		}
 	});

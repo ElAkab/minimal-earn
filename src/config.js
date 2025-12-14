@@ -3,6 +3,80 @@ import { showToast } from "./toast.js";
 
 const API_URL = "http://localhost:5000/api";
 
+// Cache des requêtes récentes pour éviter les appels redondants
+const requestCache = new Map();
+const CACHE_DURATION = 5000; // 5 secondes
+
+/**
+ * Effectue une requête API optimisée avec cache et gestion d'erreurs
+ * @param {string} endpoint - Endpoint API (sans /api)
+ * @param {Object} options - Options fetch
+ * @param {boolean} useCache - Utiliser le cache (défaut: true pour GET)
+ * @returns {Promise<any>} - Réponse JSON
+ */
+export async function apiRequest(endpoint, options = {}, useCache = true) {
+	const url = `${API_URL}${endpoint}`;
+	const cacheKey = `${options.method || "GET"}_${url}`;
+
+	// Vérifier le cache pour les requêtes GET
+	if (useCache && (!options.method || options.method === "GET")) {
+		const cached = requestCache.get(cacheKey);
+		if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+			console.log(`📦 Cache hit: ${endpoint}`);
+			return cached.data;
+		}
+	}
+
+	try {
+		const response = await fetch(url, {
+			...options,
+			headers: {
+				"Content-Type": "application/json",
+				...options.headers,
+			},
+		});
+
+		if (!response.ok) {
+			const errorData = await response.json().catch(() => ({}));
+			throw new Error(
+				errorData.message || errorData.error || `HTTP ${response.status}`
+			);
+		}
+
+		const data = await response.json();
+
+		// Mettre en cache les requêtes GET réussies
+		if (useCache && (!options.method || options.method === "GET")) {
+			requestCache.set(cacheKey, {
+				data,
+				timestamp: Date.now(),
+			});
+		}
+
+		return data;
+	} catch (error) {
+		console.error(`❌ API Error (${endpoint}):`, error);
+		throw error;
+	}
+}
+
+/**
+ * Invalide le cache pour un endpoint spécifique
+ * @param {string} endpoint - Endpoint à invalider
+ */
+export function invalidateCache(endpoint = null) {
+	if (endpoint) {
+		const url = `${API_URL}${endpoint}`;
+		for (const key of requestCache.keys()) {
+			if (key.includes(url)) {
+				requestCache.delete(key);
+			}
+		}
+	} else {
+		requestCache.clear();
+	}
+}
+
 // =====================
 // Charger la configuration
 // =====================

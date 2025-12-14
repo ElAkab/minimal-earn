@@ -16,7 +16,10 @@
 	},
 	"dependencies": {
 		"@tailwindcss/vite": "^4.1.17",
+		"chart.js": "^4.5.1",
+		"dompurify": "^3.3.1",
 		"flowbite": "^4.0.1",
+		"marked": "^17.0.1",
 		"tailwindcss": "^4.1.17"
 	}
 }

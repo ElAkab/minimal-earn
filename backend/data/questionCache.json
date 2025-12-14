@@ -1,0 +1,9 @@
+{
+  "1765713107165": {
+    "question": "**Quelle méthode Vitest permet de skip un test ?**  \nA) `it.skip()`  \nB) `it.skip()` avec un \"x\" avant  \nC) `it.only()`  \nD) `describe.skip()`  \n\n*(Note : Si le score est inférieur à 70%, préciser que `it.skip()` est la syntaxe correcte en Vitest, contrairement à l'usage de \"x\" dans d'autres frameworks.)*",
+    "model": "hir0rameel/qwen-claude",
+    "generatedAt": "2025-12-14T11:57:47.170Z",
+    "expiresAt": "2025-12-21T11:57:47.170Z",
+    "_expiresAtTimestamp": 1766318267170
+  }
+}

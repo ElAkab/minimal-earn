@@ -1,4 +1,5 @@
 import { initInterrogationsToggle } from "./config.js";
+import Chart from "chart.js/auto";
 
 // =====================
 // DONNÉES MOCK
@@ -23,7 +24,7 @@ const mockData = {
 		incorrect: [8, 6, 5, 4, 3, 2],
 	},
 
-	// Progression annuelle détaillée (12 mois)
+	// Progression annuelle détaillée
 	yearly: {
 		labels: [
 			"Fév",

@@ -1,5 +1,6 @@
 // Logique de la page notes.html
 import { initInterrogationsToggle } from "./config.js";
+import { renderMarkdown, stylizeMarkdown } from "./markdown.js";
 
 const API_URL = "http://localhost:5000/api";
 
@@ -55,6 +56,10 @@ function renderNotes() {
 	filteredNotes.forEach((note) => {
 		const noteCard = createNoteCard(note);
 		notesField.appendChild(noteCard);
+
+		// Appliquer les styles Tailwind au contenu Markdown
+		const markdownContent = noteCard.querySelector(".markdown-content");
+		if (markdownContent) stylizeMarkdown(markdownContent);
 	});
 }
 
@@ -138,7 +143,9 @@ function createNoteCard(note) {
 				: ""
 		}
 		
-		<p class="text-gray-300 mb-3">${escapeHtml(note.description || "")}</p>
+		<div class="text-gray-300 mb-3 markdown-content">${renderMarkdown(
+			note.description || ""
+		)}</div>
 
 		<!-- Effet dégradé en bas pour masquer le texte débordant -->
 		<div class="absolute bottom-0 left-0 right-0 p-3 h-16 bg-gray-900/65 pointer-events-none rounded-b-lg">

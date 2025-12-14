@@ -9,6 +9,7 @@ document.body.appendChild(toastContainer);
  * @param {string} message - Le message à afficher
  * @param {string} type - Type de toast : 'info', 'success', 'error', 'warning'
  * @param {number} duration - Durée d'affichage en ms (par défaut 3000)
+ * @returns {HTMLElement} - L'élément toast créé
  */
 export function showToast(message, type = "info", duration = 3000) {
 	const toast = document.createElement("div");
@@ -42,6 +43,9 @@ export function showToast(message, type = "info", duration = 3000) {
 			}
 		}, 300);
 	}, duration);
+
+	// Retourner l'élément pour permettre de le fermer manuellement
+	return toast;
 }
 
 /**
