@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+kill-ports.sh
+AGENTS.md
+.env

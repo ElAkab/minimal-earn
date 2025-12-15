@@ -3,14 +3,14 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>minimal-earn</title>
+		<title></title>
 		<link rel="stylesheet" href="./src/style.css" />
 	</head>
 	<body class="bg-gray-800 text-white min-h-screen">
 		<header class="bg-black/25 flex justify-evenly items-center p-5 sticky">
 			<!-- Logo || Titre -->
 			<span class="text-3xl font-bold cursor-pointer"
-				>Minima <span class="text-blue-600">learn</span></span
+				><span class="text-blue-600">Mind</span> Stimulator</span
 			>
 
 			<div class="flex gap-2">
@@ -25,56 +25,14 @@
 						</li>
 					</ul>
 				</nav>
-
-				<!-- Connexion / Inscription -->
-				<div class="font-bold">
-					<a
-						class="bg-white text-black p-1.5 rounded cursor-pointer hover:opacity-85 transition"
-						href="/sign"
-						>Inscription</a
-					>
-					<a
-						class="bg-blue-600 text-white p-1.5 rounded cursor-pointer hover:opacity-85 transition"
-						href="/login"
-						>Connexion</a
-					>
-				</div>
 			</div>
 		</header>
 
-		<main class="flex w-full min-h-full mt-2.5">
-			<section class="w-1/2 sm:px-24">
+		<main class="sm:flex w-full min-h-full mt-2.5 p-11">
+			<section class="sm:w-1/2 sm:px-24">
 				<h1 class="text-2xl text-center">Prends tes notes</h1>
 				<hr class="my-3.5" />
 				<form method="post" class="flex flex-col">
-					<div class="flex mb-4 justify-center items-center">
-						<button
-							type="button"
-							data-ai="claudeCode"
-							class="inline-flex gap-2.5 items-center justify-center text-white bg-linear-to-r from-orange-400 via-orange-500 to-orange-600 hover:bg-linear-to-br focus:ring-4 focus:outline-none focus:ring-orange-300 dark:focus:ring-orange-800 shadow-lg shadow-orange-500/50 dark:shadow-lg dark:shadow-orange-800/80 font-medium rounded-l-full text-sm px-4 py-2.5 mx-auto w-10/12 p-1 my-2 text-center leading-5 cursor-pointer transition check-btn"
-						>
-							Programmation
-							<!-- <img
-								src="./public/images/Claude_AI_symbol.svg.png"
-								alt="AI : Claude Code"
-								width="20"
-							/> -->
-						</button>
-
-						<button
-							type="button"
-							class="inline-flex gap-2.5 items-center justify-center text-white bg-linear-to-r from-cyan-400 via-cyan-500 to-cyan-600 hover:bg-linear-to-br focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 shadow-lg shadow-cyan-500/50 dark:shadow-lg dark:shadow-cyan-800/80 font-medium rounded-r-full text-sm px-4 py-2.5 mx-auto w-10/12 p-1 my-2 text-center leading-5 cursor-pointer check-btn"
-							data-ai="gemma3"
-						>
-							Autre
-							<!-- <img
-								src="./public/images/gemma-color.png"
-								alt="AI : Claude Code"
-								width="20"
-							/> -->
-						</button>
-					</div>
-
 					<input
 						type="text"
 						id="note-title"
@@ -91,40 +49,41 @@
 						required
 					></textarea>
 
-					<button
-						id="dropdownHelperRadioButton"
-						data-dropdown-toggle="dropdownHelperRadio"
-						class="w-4/12 inline-flex items-center justify-center text-white bg-brand box-border border-2 border-black hover:bg-brand-strong shadow-xl font-medium leading-5 rounded-base text-sm my-6 px-4 py-2.5 cursor-pointer"
-						type="button"
-					>
-						Priorité
-						<svg
-							class="w-4 h-4 ms-1.5 -me-0.5"
-							aria-hidden="true"
-							xmlns="http://www.w3.org/2000/svg"
-							width="24"
-							height="24"
-							fill="none"
-							viewBox="0 0 24 24"
+					<div class="flex justify-between gap-4 items-center">
+						<button
+							id="dropdownHelperRadioButton"
+							data-dropdown-toggle="dropdownHelperRadio"
+							class="w-4/12 inline-flex items-center justify-center text-white bg-brand box-border border-2 border-black hover:bg-brand-strong shadow-xl font-medium leading-5 rounded-base text-sm my-6 px-4 py-2.5 cursor-pointer"
+							type="button"
 						>
-							<path
-								stroke="currentColor"
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								stroke-width="2"
-								d="m19 9-7 7-7-7"
-							/>
-						</svg>
-					</button>
+							Priorité
+							<svg
+								class="w-4 h-4 ms-1.5 -me-0.5"
+								aria-hidden="true"
+								xmlns="http://www.w3.org/2000/svg"
+								width="24"
+								height="24"
+								fill="none"
+								viewBox="0 0 24 24"
+							>
+								<path
+									stroke="currentColor"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									stroke-width="2"
+									d="m19 9-7 7-7-7"
+								/>
+							</svg>
+						</button>
 
-					<button
-						id="submit-form"
-						type="submit"
-						class="mt-1.5 inline-block bg-linear-to-tr from-blue-500 via-white/5 to-gray-600 hover:from-gray-600 hover:to-blue-500 border cursor-pointer transition rounded p-2"
-					>
-						Noter
-					</button>
-
+						<button
+							id="submit-form"
+							type="submit"
+							class="mt-1.5 w-full inline-block bg-linear-to-tr from-blue-500 via-white/5 to-gray-600 hover:from-gray-600 hover:to-blue-500 border cursor-pointer transition rounded p-2"
+						>
+							Noter
+						</button>
+					</div>
 					<!-- Dropdown menu -->
 					<div
 						id="dropdownHelperRadio"

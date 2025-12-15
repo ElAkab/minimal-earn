@@ -3,44 +3,13 @@ import "flowbite";
 // =====================
 // Sélection d'éléments
 // =====================
-let progBtns = document.querySelectorAll(".check-btn");
+import { flashCard } from "./components/flashCard.js";
 let noteTitleInput = document.getElementById("note-title");
 let noteDescInput = document.getElementById("notes-desc");
 let radioChill = document.getElementById("helper-radio-4");
 let radioModerate = document.getElementById("helper-radio-5");
 let radioIntensive = document.getElementById("helper-radio-6");
 let submitBtn = document.getElementById("submit-form");
-
-// Choix de l'IA
-const AI = {
-	claudeCode: false,
-	gemma3: false,
-};
-
-// =====================
-// Gestion du click > IA
-// =====================
-progBtns.forEach((btn) => {
-	btn.addEventListener("click", () => {
-		// Récupère le type d'IA associé au bouton via l'attribut data-ai
-		const aiType = btn.dataset.ai;
-
-		// Ignore si le bouton n'a pas de type valide
-		if (!aiType || !AI.hasOwnProperty(aiType)) return;
-
-		// Si l'IA correspondante est déjà activée → la désactive
-		if (AI[aiType]) {
-			AI[aiType] = false;
-			console.log(`${aiType} = false`);
-		} else {
-			// Sinon, désactive toutes les autres IA
-			for (const key in AI) AI[key] = false;
-			// Active uniquement l'IA correspondante
-			AI[aiType] = true;
-			console.log(`${aiType} = true`);
-		}
-	});
-});
 
 // =====================
 // Action du submitBtn
@@ -58,33 +27,38 @@ submitBtn.addEventListener("click", async (e) => {
 		return noteDescInput.classList.add("border", "border-red-500");
 
 	// =====================
-	// Filtrer les éléments non "true"
+	// Filtrer les éléments non "true" (Obsolète)
 	// =====================
-	const trueEl = Object.keys(AI).filter((key) => AI[key] === true);
+	// const trueEl = Object.keys(AI).filter((key) => AI[key] === true);
 
 	// =====================
 	// Préparation de l'objet à envoyer
 	// =====================
 	const payload = {
-		AI: trueEl,
 		title: noteTitle,
 		description: noteDesc,
 		// "intensity" will be added based on radio selection
 	};
 
 	// =====================
-	// Gestion des radios
+	// Gestion des radios avec couleurs associées
 	// =====================
 	if (radioChill.checked) {
 		payload.intensity = "chill";
+		payload.color = "bg-blue-500";
 	} else if (radioModerate.checked) {
 		payload.intensity = "moderate";
+		payload.color = "bg-amber-500";
 	} else if (radioIntensive.checked) {
 		payload.intensity = "intensive";
+		payload.color = "bg-red-500";
 	}
 
+	// =====================
+	// Envoi de la requête au serveur
+	// =====================
 	try {
-		const response = await fetch("/api/generate-note", {
+		const response = await fetch("http://localhost:3000/api/generate-note", {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
@@ -104,13 +78,31 @@ submitBtn.addEventListener("click", async (e) => {
 		alert("Une erreur est survenue lors de la génération de la note.");
 	}
 
-	// =====================
+	// ==TEST GENTIL========
 	// Affichage du payload dans la console
 	// ====================
+
+	// 1 : Affichage simple
 	// console.log(payload);
 	// console.log(
 	// 	radioChill.checked,
 	// 	radioModerate.checked,
 	// 	radioIntensive.checked
 	// );
+
+	// 2 : Affichage du composant flashCard
+	// flashCard(payload);
 });
+
+// =====================
+// TEST DU COMPOSANT flashCard
+// =====================
+// const payload = {
+// 	title: "Exemple de note",
+// 	description:
+// 		"lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint ",
+// 	intensity: "intensive",
+// 	color: "red",
+// };
+
+// flashCard(payload);

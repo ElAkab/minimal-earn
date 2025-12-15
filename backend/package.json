@@ -3,12 +3,18 @@
 	"version": "1.0.0",
 	"description": "",
 	"main": "index.js",
+	"type": "module",
 	"scripts": {
-		"serve": "node --watch ./backend/server.js",
+		"start": "node --watch server.js",
 		"test": "vitest"
 	},
 	"keywords": [],
 	"author": "Adam El Kabir",
 	"license": "ISC",
-	"packageManager": "pnpm@10.23.0"
+	"packageManager": "pnpm@10.23.0",
+	"dependencies": {
+		"cors": "^2.8.5",
+		"express": "^5.2.1",
+		"ollama": "^0.6.3"
+	}
 }
