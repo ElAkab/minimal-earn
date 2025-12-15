@@ -94,10 +94,10 @@ router.get("/generate-question/:id", async (req, res) => {
 	try {
 		const id = Number(req.params.id);
 		console.log(`📝 Requête génération question pour note ID: ${id}`);
-		
+
 		const notes = await dataStore.readNotes();
 		const note = notes.find((n) => n.id === id);
-		
+
 		if (!note) {
 			console.error(`❌ Note ${id} introuvable`);
 			return res.status(404).json({ message: "Note not found" });
@@ -112,15 +112,15 @@ router.get("/generate-question/:id", async (req, res) => {
 		// Générer la question via IA
 		const question = await ai.generateQuestion(note);
 		const model = ai.pickModel(note);
-		
+
 		console.log(`✅ Question générée avec succès pour note ${id}`);
 		res.json({ question, model });
 	} catch (err) {
 		console.error("❌ Erreur génération question:", err);
 		console.error("Stack trace:", err.stack);
-		res.status(500).json({ 
+		res.status(500).json({
 			message: "Failed to generate question",
-			error: err.message 
+			error: err.message,
 		});
 	}
 });
@@ -129,7 +129,7 @@ router.get("/generate-question/:id", async (req, res) => {
 router.post("/evaluate-answer", async (req, res) => {
 	try {
 		const { noteId, question, userAnswer } = req.body;
-		
+
 		console.log(`📝 Requête évaluation pour note ID: ${noteId}`);
 
 		if (!userAnswer || userAnswer.trim() === "") {
@@ -139,7 +139,7 @@ router.post("/evaluate-answer", async (req, res) => {
 
 		const notes = await dataStore.readNotes();
 		const note = notes.find((n) => n.id === Number(noteId));
-		
+
 		if (!note) {
 			console.error(`❌ Note ${noteId} introuvable`);
 			return res.status(404).json({ message: "Note not found" });
@@ -162,9 +162,9 @@ router.post("/evaluate-answer", async (req, res) => {
 	} catch (err) {
 		console.error("❌ Erreur évaluation réponse:", err);
 		console.error("Stack trace:", err.stack);
-		res.status(500).json({ 
+		res.status(500).json({
 			message: "Failed to evaluate answer",
-			error: err.message 
+			error: err.message,
 		});
 	}
 });
@@ -174,10 +174,10 @@ router.get("/hint/:id", async (req, res) => {
 	try {
 		const id = Number(req.params.id);
 		console.log(`💡 Requête génération indice pour note ID: ${id}`);
-		
+
 		const notes = await dataStore.readNotes();
 		const note = notes.find((n) => n.id === id);
-		
+
 		if (!note) {
 			console.error(`❌ Note ${id} introuvable`);
 			return res.status(404).json({ message: "Note not found" });
@@ -185,15 +185,15 @@ router.get("/hint/:id", async (req, res) => {
 
 		// Générer un indice via IA
 		const hint = await ai.generateHint(note);
-		
+
 		console.log(`✅ Indice généré avec succès pour note ${id}`);
 		res.json({ hint });
 	} catch (err) {
 		console.error("❌ Erreur génération indice:", err);
 		console.error("Stack trace:", err.stack);
-		res.status(500).json({ 
+		res.status(500).json({
 			message: "Failed to generate hint",
-			error: err.message 
+			error: err.message,
 		});
 	}
 });
