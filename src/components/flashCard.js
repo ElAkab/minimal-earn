@@ -4,29 +4,28 @@
  * @returns {string} Le HTML de la carte
  */
 function generateCardHTML(note) {
-	const { title, description, intensity, color } = note;
+	const { title, content, intensity, color } = note;
 
-    // Remplissage du payload pour le suivi
-    payload = {
-        id: note.id || crypto.randomUUID(),
-        title: title,
-        description: description,
-        date: note.date || Date.now(),
-    };
+	// Remplissage du payload pour le suivi
+	payload = {
+		id: note.id || crypto.randomUUID(),
+		title: title,
+		content: content,
+		date: note.date || Date.now(),
+	};
 
 	// =====================
 	// Mapping des couleurs vers les classes Tailwind complètes
 	// =====================
 	const colorClasses = {
-		blue: "bg-blue-500",
-		amber: "bg-amber-500",
-		red: "bg-red-500",
-		yellow: "bg-yellow-500",
-		green: "bg-green-500",
+		blue: "text-blue-500",
+		amber: "text-amber-500",
+		red: "text-red-500",
 	};
 
 	// Récupérer la classe complète ou utiliser une couleur par défaut
-	const bgColorClass = colorClasses[color] || "bg-gray-500";
+	const bgColorClass = colorClasses[color];
+	console.log("Couleur de fond pour la carte :", bgColorClass);
 
 	return `
         <article
@@ -35,7 +34,7 @@ function generateCardHTML(note) {
             role="alert"
         >
             <div class="w-full flex justify-between items-center p-2 rounded-base">
-                <span class="${bgColorClass} text-sm font-bold p-2.5 rounded-base text-white">
+                <span class="${bgColorClass} text-sm font-bold p-2.5 rounded-base">
                     ${intensity}
                 </span>
                 <h3 class="mx-auto text-2xl font-extrabold">${title}</h3>
@@ -55,7 +54,7 @@ function generateCardHTML(note) {
 
             <hr class="my-3" />
 
-            <p id="description" class="text-center overflow-y-auto">${description}</p>
+            <p id="content" class="text-center overflow-y-auto">${content}</p>
 
             <!-- Zone de messages utilisateur -->
 
@@ -69,14 +68,14 @@ function generateCardHTML(note) {
                 <textarea
                     id="chat"
                     rows="1"
-                    class="bg-neutral-primary-medium border border-default-medium text-heading text-sm rounded-l-full focus:ring-fg-disabled focus:border-fg-disabled block w-full px-3 py-2.5 placeholder:text-body resize-none"
+                    class="bg-neutral-primary-medium border border-default-medium text-heading text-sm rounded-full focus:ring-fg-disabled focus:border-fg-disabled block w-full px-3 py-2.5 placeholder:text-body resize-none"
                     placeholder="Your message..."
                 ></textarea>
             </div>
 
             <!-- Actions -->
 				<div class="w-full p-6 flex items-center justify-between">
-					<div class="flex items-center">
+					<div id="actions-container" class="flex items-center">
 						<div class="flex flex-col ml-auto">
 							<button
                                 id="hint-button"
@@ -116,12 +115,12 @@ function generateCardHTML(note) {
 						
                     <button
                         type="submit"
-                        class="inline-flex p-2.5 px-4 bg-gray-800 justify-center text-shadow-fg-disabled rounded-r-full cursor-pointer hover:bg-fg-disabled/35"
+                        class="inline-flex flex-row-reverse p-2.5 px-4 bg-gray-800 justify-center text-shadow-fg-disabled rounded-full cursor-pointer hover:bg-fg-disabled/35 gap-3"
                     >
                         <svg class="w-6 h-6 rotate-90 rtl:-rotate-90" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m12 18-7 3 7-18 7 18-7-3Zm0 0v-5"/>
                         </svg>
-                        <span class="sr-only">Soumettre</span>
+                        <span class="text-base">Soumettre</span>
                     </button>
 				</div>
         </article>
@@ -196,6 +195,7 @@ function mockIAResponse(userMessage, descriptionElement) {
 export function flashCard(note) {
 	// 1. Générer le HTML
 	const cardHTML = generateCardHTML(note);
+	console.log("HTML de la carte généré :", cardHTML);
 
 	// 2. Créer l'overlay
 	const overlay = document.createElement("div");
@@ -225,7 +225,8 @@ export function flashCard(note) {
 	const chatTextarea = overlay.querySelector("#chat");
 	const sendBtn = overlay.querySelector("button[type='submit']");
 	const messagesContainer = overlay.querySelector("#messages-container");
-	const descriptionElement = overlay.querySelector("#description");
+	const descriptionElement = overlay.querySelector("#content");
+	const actionsContainer = overlay.querySelector("#actions-container");
 
 	// 7. Gestion du bouton de fermeture
 	if (closeBtn) {
@@ -253,11 +254,15 @@ export function flashCard(note) {
 		});
 	}
 
-    // 10. Gestion du bouton tricher 
+	// 10. Gestion du bouton tricher
 
 	// 11. Gestion de l'envoi du message
 	if (chatTextarea && sendBtn && messagesContainer && descriptionElement) {
 		const handleSendMessage = () => {
+			!actionsContainer.classList.contains("hidden")
+				? actionsContainer.classList.add("hidden")
+				: null; // Cacher les actions après le premier message
+
 			const message = chatTextarea.value.trim();
 			if (message) {
 				console.log("Message envoyé :", message);

@@ -7,7 +7,7 @@ export default defineConfig({
 		proxy: {
 			"/api": {
 				target: "http://localhost:3000",
-				changeOrigin: true,
+				changeOrigin: true, // Nécessaire pour le CORS : changeOrigin = On active le changement d'origine
 			},
 			// Proxy pour les routes statiques si nécessaire
 			"/notes": {

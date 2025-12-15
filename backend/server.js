@@ -27,17 +27,18 @@ app.get("/notes", (req, res) => {
 });
 
 app.post("/api/generate-note", (req, res) => {
-	const { title, description, intensity, color } = req.body;
+	const { title, content, intensity, color } = req.body;
 
 	console.log("Received payload:", req.body);
 
 	// Here you can add your logic to generate a note based on the payload
 
-	res.status(200).json({
+	res.status(201).json({
+		// 201 = Created
 		message: "Note received successfully",
 		note: {
 			title,
-			description,
+			content,
 			intensity,
 			color,
 		},

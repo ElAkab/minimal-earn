@@ -36,7 +36,7 @@ submitBtn.addEventListener("click", async (e) => {
 	// =====================
 	const payload = {
 		title: noteTitle,
-		description: noteDesc,
+		content: noteDesc,
 		// "intensity" will be added based on radio selection
 	};
 
@@ -44,14 +44,14 @@ submitBtn.addEventListener("click", async (e) => {
 	// Gestion des radios avec couleurs associées
 	// =====================
 	if (radioChill.checked) {
-		payload.intensity = "chill";
-		payload.color = "bg-blue-500";
+		payload.intensity = "Chill";
+		payload.color = "blue";
 	} else if (radioModerate.checked) {
-		payload.intensity = "moderate";
-		payload.color = "bg-amber-500";
+		payload.intensity = "Sérieux";
+		payload.color = "amber";
 	} else if (radioIntensive.checked) {
-		payload.intensity = "intensive";
-		payload.color = "bg-red-500";
+		payload.intensity = "Nécessaire";
+		payload.color = "red";
 	}
 
 	// =====================
@@ -66,12 +66,20 @@ submitBtn.addEventListener("click", async (e) => {
 			body: JSON.stringify(payload),
 		});
 
+		console.log(response.ok);
+
 		if (!response.ok) {
 			throw new Error(`HTTP error! status: ${response.status}`);
 		}
 
 		const data = await response.json();
 		console.log("Response from server:", data);
+
+		alert("Note générée avec succès !");
+		noteTitleInput.value = "";
+		noteDescInput.value = "";
+
+		flashCard(payload);
 	} catch (error) {
 		// Gérer les erreurs de réseau ou autres
 		console.error("Error during fetch:", error);
@@ -99,7 +107,7 @@ submitBtn.addEventListener("click", async (e) => {
 // =====================
 // const payload = {
 // 	title: "Exemple de note",
-// 	description:
+// 	content:
 // 		"lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint ",
 // 	intensity: "intensive",
 // 	color: "red",
