@@ -22,15 +22,15 @@ db.pragma("foreign_keys = ON");
 // Création de la table Notes
 db.exec(`
     CREATE TABLE IF NOT EXISTS Notes (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        title TEXT NOT NULL,     -- Titre de la note
-        content TEXT,            -- Contenu de la note
-        intensity INTEGER NOT NULL,       -- (1) Niveau d'intensité de planification
-        color TEXT,              -- (2) Couleur associée à l'intensité de planification
-        nextReviewDate DATETIME DEFAULT CURRENT_TIMESTAMP, -- Date de la prochaine révision (commence maintenant)
-        easeFactor REAL DEFAULT 2.5,         -- Facteur de facilité (2.5 = valeur initiale selon SM-2)
-        currentInterval INTEGER DEFAULT 0,   -- Intervalle actuel en jours
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP -- Date de création
+        id INTEGER PRIMARY KEY AUTOINCREMENT,               -- Identifiant unique de la note
+        title TEXT NOT NULL,                                -- Titre de la note
+        content TEXT,                                       -- Contenu de la note
+        intensity INTEGER NOT NULL,                         -- (1) Niveau d'intensité de planification
+        color TEXT,                                         -- (2) Couleur associée à l'intensité de planification
+        nextReviewDate DATETIME DEFAULT CURRENT_TIMESTAMP,  -- Date de la prochaine révision (commence maintenant)
+        easeFactor REAL DEFAULT 2.5,                        -- Facteur de facilité (2.5 = valeur initiale selon SM-2)
+        currentInterval INTEGER DEFAULT 0,                  -- Intervalle actuel en jours
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP       -- Date de création
     );
 `);
 

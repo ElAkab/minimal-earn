@@ -37,7 +37,7 @@ export function showExpandedCard(note) {
                 <!-- Bouton de fermeture -->
                 <button 
                     id="close-expanded-card" 
-                    class="text-neutral-400 hover:text-neutral-100 transition"
+                    class="text-neutral-400 hover:text-neutral-100 cursor-pointer transition"
                     aria-label="Fermer"
                 >
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

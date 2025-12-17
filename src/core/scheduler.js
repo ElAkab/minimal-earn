@@ -43,29 +43,93 @@ export function calculateNextReview(score, interval, easeFactor) {
 
 // Récupère la note à réviser en fonction de la date de prochaine révision
 export function getNoteToReview(intensity) {
-	// On utilise Promise pour une meilleure gestion asynchrone (node:sqlite est souvent basé sur des Callbacks/Promises)
-	// Assumons que 'db' exporte des méthodes Promise comme .get() ou .all()
-
 	const now = new Date().toISOString();
 
-	// On cherche la note la plus ancienne dont la date de révision est passée (<= now)
-	// On doit faire une jointure pour récupérer les infos de la Note ET de la dernière Progression.
-	// Pour simplifier, on part du principe qu'on va chercher la Note ET le dernier enregistrement de Progression
+	console.log(`\n🔍 [Scheduler] Recherche de notes à réviser...`);
+	console.log(`   📅 Date actuelle : ${now}`);
+	console.log(
+		`   🎯 Intensité demandée : ${intensity} (type: ${typeof intensity})`
+	);
 
-	// Simplification pour l'instant : chercher toutes les notes (elles n'ont pas encore de nextReviewDate directement)
-	// *Idéalement, on ajouterait 'nextReviewDate' et 'easeFactor' directement dans la table 'Notes' pour simplifier la requête.*
+	// Vérifier combien de notes existent au total
+	const totalNotes = db.prepare("SELECT COUNT(*) as count FROM Notes").get();
+	console.log(`   📚 Total notes en DB : ${totalNotes.count}`);
 
-	// Nouvelle approche pour simplifier l'accès aux données :
-	// On suppose que la table 'Notes' contient déjà 'nextReviewDate' et 'easeFactor' (meilleure pratique pour la performance).
+	// Vérifier combien ont l'intensité demandée
+	const notesWithIntensity = db
+		.prepare("SELECT COUNT(*) as count FROM Notes WHERE intensity = ?")
+		.get(intensity);
+	console.log(
+		`   🎯 Notes avec intensité ${intensity} : ${notesWithIntensity.count}`
+	);
 
-	// CORRECTION : Avec node:sqlite (mode synchrone), il faut utiliser .prepare().all()
+	// Vérifier les dates de révision
+	const allNextReviewDates = db
+		.prepare(
+			"SELECT id, title, nextReviewDate, intensity FROM Notes WHERE intensity = ?"
+		)
+		.all(intensity);
+	console.log(`   📆 Dates de révision pour intensité ${intensity}:`);
+	allNextReviewDates.forEach((note) => {
+		const isPast = note.nextReviewDate <= now;
+		console.log(
+			`      - Note ${note.id}: ${note.nextReviewDate} ${
+				isPast ? "✅ (à réviser)" : "⏳ (futur)"
+			}`
+		);
+	});
+
+	// Requête principale
 	const stmt = db.prepare(
 		"SELECT id, title, content, easeFactor, currentInterval FROM Notes WHERE nextReviewDate <= ? AND intensity = ? ORDER BY nextReviewDate ASC LIMIT 5"
 	);
 	const notes = stmt.all(now, intensity);
-	// notes est maintenant un tableau de notes prêtes pour la révision
+
+	console.log(`   ✨ Résultat : ${notes.length} note(s) trouvée(s)\n`);
 
 	return notes;
+}
+
+// Fonction de test pour visualiser la progression de l'intervalle
+export function testScheduler() {
+	// console.log("=== TEST SCHEDULER ===\n");
+
+	let interval = 0;
+	let easeFactor = 2.5;
+	const results = [];
+
+	const scenarios = [
+		{ score: 5, description: "Parfait" },
+		{ score: 4, description: "Bien" },
+		{ score: 3, description: "Correct" },
+		{ score: 2, description: "Oublié" },
+		{ score: 4, description: "Bien (après oubli)" },
+	];
+
+	scenarios.forEach((test, index) => {
+		// test = { score, description } et index = numéro de la révision (révision = index + 1)
+
+		const result = calculateNextReview(test.score, interval, easeFactor);
+		interval = result.interval;
+		easeFactor = result.easeFactor;
+
+		console.log(
+			`Révision ${index + 1} - Score: ${test.score} (${test.description})`
+		);
+
+		console.log(`→ Prochain intervalle: ${interval} jour(s)`);
+		console.log(`→ Ease Factor: ${easeFactor.toFixed(2)}\n`);
+
+		results.push({
+			revision: index + 1, // +1 car index commence à 0 (pour éviter de faire une révision 0)
+			score: test.score,
+			description: test.description,
+			interval,
+			easeFactor: parseFloat(easeFactor.toFixed(2)), // parseFloat pour éviter les chaînes de caractères
+		});
+	});
+
+	return results;
 }
 
 // Conseil en System Design : Pour optimiser les requêtes, je te suggère de déplacer les champs nextReviewDate et easeFactor de la table Progression vers la table Notes. La table Progression garde l'historique (pour les statistiques), et la table Notes garde l'état ACTUEL de la révision. Cela simplifie ÉNORMÉMENT la requête getNoteToReview() !

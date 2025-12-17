@@ -21,7 +21,6 @@ function generateCardHTML(note) {
 
 	// Récupérer la classe Tailwind pour la couleur
 	const bgColorClass = getColorClass(color);
-	console.log("Couleur de fond pour la carte :", bgColorClass);
 
 	return `
         <article
@@ -64,19 +63,42 @@ function generateCardHTML(note) {
                 <textarea
                     id="chat"
                     rows="1"
-                    class="bg-neutral-primary-medium border border-default-medium text-heading text-sm rounded-full focus:ring-fg-disabled focus:border-fg-disabled block w-full px-3 py-2.5 placeholder:text-body resize-none"
+                    class="bg-neutral-primary-medium border border-default-medium text-heading text-sm rounded-l-full focus:ring-fg-disabled focus:border-fg-disabled block w-full px-3 py-2.5 placeholder:text-body resize-none"
                     placeholder="Your message..."
                 ></textarea>
+				<button
+					id="send-button"
+					type="button"
+					class="inline-flex justify-center p-2.5 px-4 bg-gray-800 text-shadow-fg-disabled rounded-r-full cursor-pointer hover:bg-fg-disabled/35"
+				>
+					<svg class="w-6 h-6 rotate-90 rtl:-rotate-90" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+						<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m12 18-7 3 7-18 7 18-7-3Zm0 0v-5"/>
+					</svg>
+					<span class="sr-only">Send message</span>
+				</button>
             </div>
 
 			<!-- Actions qui accompagneront la réponse IA -->
 			<div id="ai-actions-container" class="hidden w-full items-center justify-between mt-4 px-3">
-				<button id="search-button" type="button">Rechercher</button>
-				<button id="improve-notes-button" type="button">Améliorer les notes</button>
+				<button
+					id="search-button"
+					type="button"
+					class="inline-flex items-center gap-2 rounded-md border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-600 shadow-sm transition hover:bg-slate-50 hover:text-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-300 cursor-pointer"
+				>
+					Rechercher
+				</button>
+
+				<button
+					id="improve-notes-button"
+					type="submit"
+					class="inline-flex items-center gap-2 rounded-md border border-slate-200 bg-slate-50 px-3 py-1.5 text-sm font-medium text-slate-700 shadow-sm transition hover:bg-slate-100 hover:text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-300 cursor-pointer"
+				>
+					Améliorer les notes
+				</button>
 			</div>
 
             <!-- Actions -->
-				<div class="w-full p-6 flex items-center justify-between">
+				<div class="w-full p-6 flex items-center justify-center">
 					<div id="actions-container" class="flex items-center">
 						<div class="flex flex-col ml-auto">
 							<button
@@ -114,16 +136,6 @@ function generateCardHTML(note) {
 							</button>
 						</div>
 					</div>
-						
-                    <button
-                        type="submit"
-                        class="inline-flex flex-row-reverse p-2.5 px-4 bg-gray-800 justify-center text-shadow-fg-disabled rounded-full cursor-pointer hover:bg-fg-disabled/35 gap-3"
-                    >
-                        <svg class="w-6 h-6 rotate-90 rtl:-rotate-90" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m12 18-7 3 7-18 7 18-7-3Zm0 0v-5"/>
-                        </svg>
-                        <span class="text-base">Soumettre</span>
-                    </button>
 				</div>
         </article>
     `;
@@ -203,17 +215,16 @@ function mockIAResponse(userMessage, descriptionElement) {
 export function flashCard(note) {
 	// 1. Générer le HTML
 	const cardHTML = generateCardHTML(note);
-	console.log("HTML de la carte généré :", cardHTML);
 
 	// 2. Créer l'overlay
 	const overlay = document.createElement("div");
-	overlay.className =
-		"fixed inset-0 bg-black/80 z-40 flex items-center justify-center p-4";
+	overlay.className = "fixed bottom-4 right-4 z-40";
 	overlay.id = "flash-card-overlay";
 
 	// 3. Créer le conteneur de la carte
 	const cardWrapper = document.createElement("div");
-	cardWrapper.className = "max-w-2xl w-full";
+	cardWrapper.className =
+		"max-w-md min-w-[660px] rounded-lg shadow-2xl animate-slide-in";
 	cardWrapper.innerHTML = cardHTML;
 
 	// 4. Assembler
@@ -231,7 +242,7 @@ export function flashCard(note) {
 	const dontKnowBtn = overlay.querySelector("#dont-know-button");
 	const hintBtn = overlay.querySelector("#hint-button");
 	const chatTextarea = overlay.querySelector("#chat");
-	const sendBtn = overlay.querySelector("button[type='submit']");
+	const sendBtn = overlay.querySelector("#send-button");
 	const messagesContainer = overlay.querySelector("#messages-container");
 	const descriptionElement = overlay.querySelector("#content");
 	const actionsContainer = overlay.querySelector("#actions-container");

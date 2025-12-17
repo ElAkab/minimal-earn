@@ -3,7 +3,7 @@ import "flowbite";
 // =====================
 // Sélection d'éléments
 // =====================
-import { flashCard } from "./components/flashCard.js";
+// import { flashCard } from "./components/flashCard.js";
 import { INTENSITY_MAP, getIntensityColor } from "./utils/constants.js";
 
 let noteTitleInput = document.getElementById("note-title");
@@ -12,6 +12,9 @@ let radioChill = document.getElementById("helper-radio-4");
 let radioModerate = document.getElementById("helper-radio-5");
 let radioIntensive = document.getElementById("helper-radio-6");
 let submitBtn = document.getElementById("submit-form");
+import { startAutoReview } from "./core/autoReview.js";
+
+startAutoReview();
 
 // =====================
 // Action du submitBtn
@@ -84,8 +87,6 @@ submitBtn.addEventListener("click", async (e) => {
 		alert("Note générée avec succès !");
 		noteTitleInput.value = "";
 		noteDescInput.value = "";
-
-		flashCard(payload);
 	} catch (error) {
 		// Gérer les erreurs de réseau ou autres
 		console.error("Error during fetch:", error);

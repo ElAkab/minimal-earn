@@ -12,3 +12,19 @@
          focus:outline-none focus:ring-2 focus:ring-blue-500/40 
          focus:border ring-blue-500/40 transition-colors;
 }
+
+/* Animation slide-in pour les notifications */
+@keyframes slide-in {
+	from {
+		transform: translateX(100%);
+		opacity: 0;
+	}
+	to {
+		transform: translateX(0);
+		opacity: 1;
+	}
+}
+
+.animate-slide-in {
+	animation: slide-in 0.4s ease-out;
+}

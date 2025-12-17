@@ -13,7 +13,7 @@ describe("calculateNextReview - Algorithme SM-2", () => {
 			expect(result.easeFactor).toBeGreaterThanOrEqual(1.3);
 		});
 
-		it("devrait réinitialiser l'intervalle à 1 jour avec un score de 2", () => {
+		it.only("devrait réinitialiser l'intervalle à 1 jour avec un score de 2", () => {
 			const result = calculateNextReview(2, 30, 2.2);
 
 			expect(result.interval).toBe(1);

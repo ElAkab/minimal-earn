@@ -12,6 +12,7 @@ export async function loadNotes() {
 		const data = await response.json();
 		console.log(`📚 ${data.count} notes chargées :`, data.notes);
 
+		console.log("Détails des notes :", data);
 		return data.notes;
 	} catch (error) {
 		console.error("❌ Erreur lors du chargement des notes:", error);
