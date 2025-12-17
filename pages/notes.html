@@ -26,35 +26,18 @@
 						</li>
 					</ul>
 				</nav>
-
-				<!-- Connexion / Inscription -->
-				<div class="font-bold">
-					<a
-						class="bg-white text-black p-1.5 rounded cursor-pointer hover:opacity-85 transition"
-						href="/sign"
-						>Inscription</a
-					>
-					<a
-						class="bg-blue-600 text-white p-1.5 rounded cursor-pointer hover:opacity-85 transition"
-						href="/login"
-						>Connexion</a
-					>
-				</div>
 			</div>
 		</header>
 
 		<main class="flex w-full min-h-full mt-2.5">
-			<section class="flex gap-5 mx-auto text-2xl font-bold">
-				<button class="cursor-pointer underline">Tout</button>
-				<button class="cursor-pointer">Programmation</button>
-				<button class="cursor-pointer">Autre</button>
-			</section>
-
-			<section id="notes-field">
+			<section
+				id="notes-field"
+				class="w-full max-w-6xl mx-auto p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 auto-rows-max"
+			>
 				<!-- Futures notes -->
 			</section>
 		</main>
 
-		<!-- <script type="module" src="script.js"></script> -->
+		<script type="module" src="../src/notes.js"></script>
 	</body>
 </html>

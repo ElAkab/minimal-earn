@@ -4,6 +4,8 @@ import "flowbite";
 // Sélection d'éléments
 // =====================
 import { flashCard } from "./components/flashCard.js";
+import { INTENSITY_MAP, getIntensityColor } from "./utils/constants.js";
+
 let noteTitleInput = document.getElementById("note-title");
 let noteDescInput = document.getElementById("notes-desc");
 let radioChill = document.getElementById("helper-radio-4");
@@ -41,24 +43,28 @@ submitBtn.addEventListener("click", async (e) => {
 	};
 
 	// =====================
-	// Gestion des radios avec couleurs associées
+	// Gestion des radios avec intensité + couleur
 	// =====================
 	if (radioChill.checked) {
-		payload.intensity = "Chill";
-		payload.color = "blue";
+		payload.intensity = INTENSITY_MAP.Chill; // 1
+		payload.color = getIntensityColor(INTENSITY_MAP.Chill); // "blue"
 	} else if (radioModerate.checked) {
-		payload.intensity = "Sérieux";
-		payload.color = "amber";
+		payload.intensity = INTENSITY_MAP.Sérieux; // 2
+		payload.color = getIntensityColor(INTENSITY_MAP.Sérieux); // "amber"
 	} else if (radioIntensive.checked) {
-		payload.intensity = "Nécessaire";
-		payload.color = "red";
+		payload.intensity = INTENSITY_MAP.Nécessaire; // 3
+		payload.color = getIntensityColor(INTENSITY_MAP.Nécessaire); // "red"
+	} else {
+		// Valeur par défaut si aucun radio n'est sélectionné
+		payload.intensity = INTENSITY_MAP.Sérieux; // 2
+		payload.color = getIntensityColor(INTENSITY_MAP.Sérieux); // "amber"
 	}
 
 	// =====================
 	// Envoi de la requête au serveur
 	// =====================
 	try {
-		const response = await fetch("http://localhost:3000/api/generate-note", {
+		const response = await fetch("http://localhost:3000/api/notes", {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",

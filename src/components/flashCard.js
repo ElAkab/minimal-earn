@@ -1,3 +1,5 @@
+import { getIntensityLabel, getColorClass } from "../utils/constants.js";
+
 /**
  * Génère le HTML d'une carte mémo
  * @param {Object} note - Les données de la note
@@ -14,28 +16,22 @@ function generateCardHTML(note) {
 		date: note.date || Date.now(),
 	};
 
-	// =====================
-	// Mapping des couleurs vers les classes Tailwind complètes
-	// =====================
-	const colorClasses = {
-		blue: "text-blue-500",
-		amber: "text-amber-500",
-		red: "text-red-500",
-	};
+	// Conversion de l'intensité nombre → texte (via utils centralisés)
+	const intensityText = getIntensityLabel(intensity);
 
-	// Récupérer la classe complète ou utiliser une couleur par défaut
-	const bgColorClass = colorClasses[color];
+	// Récupérer la classe Tailwind pour la couleur
+	const bgColorClass = getColorClass(color);
 	console.log("Couleur de fond pour la carte :", bgColorClass);
 
 	return `
         <article
-            class="bg-black border-4 w-full max-h-[632px] p-4 rounded-3xl flex flex-col justify-center items-center relative z-50"
+            class="bg-black border-4 w-full max-h-158 p-4 rounded-3xl flex flex-col justify-center items-center relative z-50"
             id="toast-success"
             role="alert"
         >
             <div class="w-full flex justify-between items-center p-2 rounded-base">
                 <span class="${bgColorClass} text-sm font-bold p-2.5 rounded-base">
-                    ${intensity}
+                    ${intensityText}
                 </span>
                 <h3 class="mx-auto text-2xl font-extrabold">${title}</h3>
                 <button
@@ -72,6 +68,12 @@ function generateCardHTML(note) {
                     placeholder="Your message..."
                 ></textarea>
             </div>
+
+			<!-- Actions qui accompagneront la réponse IA -->
+			<div id="ai-actions-container" class="hidden w-full items-center justify-between mt-4 px-3">
+				<button id="search-button" type="button">Rechercher</button>
+				<button id="improve-notes-button" type="button">Améliorer les notes</button>
+			</div>
 
             <!-- Actions -->
 				<div class="w-full p-6 flex items-center justify-between">
@@ -184,6 +186,12 @@ function mockIAResponse(userMessage, descriptionElement) {
 		console.log("Réponse IA générée pour :", iaMessage);
 		updateDescription(descriptionElement, iaMessage);
 	}, 1000); // Simuler un délai de 1 seconde
+
+	// Boutons qui accompagneront la réponse IA
+	const actionsContainer = document.getElementById("ai-actions-container");
+	if (actionsContainer) {
+		actionsContainer.classList.remove("hidden");
+	}
 }
 
 /**

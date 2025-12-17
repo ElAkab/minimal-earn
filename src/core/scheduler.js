@@ -1,17 +1,17 @@
 // Logique de calcul de la date
+import db from "../db.js";
 
 /** 
     calculateNextReview(score, currentEase, currentInterval) : Prend en entrée le score de l'IA et l'historique de la note, puis calcule le nouveau nextReviewDate. (On utilisera une version simplifiée de l'algorithme SM-2 pour commencer).
 
     getNoteToReview() : Interroge la base de données pour trouver la note dont le nextReviewDate est le plus ancien ou qui est déjà passé.
 
-    - score = qualifié de la réponse
-    - interval = temps avant la prochaine révision
+    - score = qualité de la réponse
+    - interval = temps (en jours) avant la prochaine révision
     - easeFactor = difficulté de la note 
 **/
-import db from "../db.js";
 
-export function calculateNextReview(score, inteval, easeFactor) {
+export function calculateNextReview(score, interval, easeFactor) {
 	let newEase = easeFactor;
 
 	if (score < 3) {
@@ -21,17 +21,28 @@ export function calculateNextReview(score, inteval, easeFactor) {
 			interval: 1,
 			easeFactor: newEase,
 		};
-	}
+		// Exemple : Si l'utilisateur a oublié la note, on réinitialise l'intervalle à 1 jour
+	} else {
+		// Score >= 3
+		newEase = easeFactor + (0.1 - (5 - score) * (0.08 + (5 - score) * 0.02)); // Formule SM-2 standard pour ajuster l'Ease (difficulté)
+		newEase = Math.min(2.5, newEase); // Empêcher l'easeFactor de dépasser un maximum (ex: 2.5)
 
-	// Bonne réponse → ajuster l'intervalle
-	const newInterval = Math.round(inteval * newEase);
-	return {
-		interval: newInterval,
-		easeFactor: newEase,
-	};
+		// Calcul du nouvel intervalle (première fois : 1 jour, deuxième fois : 6 jours, puis intervalle * newEase)
+		let newInterval;
+		if (interval === 0) newInterval = 1; // Si c'est la première révision
+		else if (interval === 1) newInterval = 6; // Si c'est la deuxième
+		else newInterval = Math.round(interval * newEase);
+
+		// Bonne réponse → ajuster l'intervalle
+		return {
+			interval: newInterval,
+			easeFactor: newEase,
+		};
+	}
 }
 
-export function getNoteToReview() {
+// Récupère la note à réviser en fonction de la date de prochaine révision
+export function getNoteToReview(intensity) {
 	// On utilise Promise pour une meilleure gestion asynchrone (node:sqlite est souvent basé sur des Callbacks/Promises)
 	// Assumons que 'db' exporte des méthodes Promise comme .get() ou .all()
 
@@ -46,12 +57,15 @@ export function getNoteToReview() {
 
 	// Nouvelle approche pour simplifier l'accès aux données :
 	// On suppose que la table 'Notes' contient déjà 'nextReviewDate' et 'easeFactor' (meilleure pratique pour la performance).
-	const note = db.get(
-		"SELECT id, title, content FROM Notes WHERE nextReviewDate <= ? ORDER BY nextReviewDate ASC LIMIT 1",
-		now
-	);
 
-	return note;
+	// CORRECTION : Avec node:sqlite (mode synchrone), il faut utiliser .prepare().all()
+	const stmt = db.prepare(
+		"SELECT id, title, content, easeFactor, currentInterval FROM Notes WHERE nextReviewDate <= ? AND intensity = ? ORDER BY nextReviewDate ASC LIMIT 5"
+	);
+	const notes = stmt.all(now, intensity);
+	// notes est maintenant un tableau de notes prêtes pour la révision
+
+	return notes;
 }
 
 // Conseil en System Design : Pour optimiser les requêtes, je te suggère de déplacer les champs nextReviewDate et easeFactor de la table Progression vers la table Notes. La table Progression garde l'historique (pour les statistiques), et la table Notes garde l'état ACTUEL de la révision. Cela simplifie ÉNORMÉMENT la requête getNoteToReview() !
