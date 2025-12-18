@@ -3,7 +3,7 @@
  * Affiche une carte aléatoire toutes les 15 secondes
  */
 
-import { flashCard } from "../components/flashCard.js";
+import { flashCard } from "./components/flashCard.js";
 
 // Configuration
 const INTERVAL_MS = 15000; // 15 secondes
@@ -112,3 +112,6 @@ export function stopAutoReview() {
 		console.log("🛑 [AutoReview] Arrêté");
 	}
 }
+
+// Démarrage automatique
+startAutoReview();

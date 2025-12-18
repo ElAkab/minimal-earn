@@ -24,52 +24,56 @@ export function createNoteCard(note) {
 
 	// Générer le HTML de la carte
 	noteElement.innerHTML = `
-        <div class="bg-neutral-900/90 max-w-sm h-64 p-6 rounded-xl border border-neutral-800 shadow-lg transition hover:shadow-xl">
-            <div class="flex items-center justify-between mb-4">
-                <span class="px-2.5 py-0.5 rounded text-xs font-medium ${colorClass} bg-${
+		<div class="bg-neutral-900/90 max-w-sm h-64 p-6 rounded-xl border border-neutral-800 shadow-lg transition hover:shadow-xl">
+			<div class="flex items-center justify-between mb-4">
+				<span class="px-2.5 py-0.5 rounded text-xs font-medium ${colorClass} bg-${
 		note.color
 	}-500/10 border border-${note.color}-500/20">
-                    ${intensityLabel}
-                </span>
-
-                <h5 class="text-xl text-center font-semibold tracking-tight text-neutral-100">
-                    ${note.title}
-                </h5>
-
-				<button id="delete-note-${note.id}" data-note-id="${note.id}"
-				title="Supprimer cette note" type="button" class="text-body bg-transparent hover:bg-neutral-tertiary/5 hover:text-heading rounded-base text-sm w-9 h-9 cursor-pointer transition" data-modal-hide="static-modal">
-                    <svg class="w-5 h-5 mx-auto" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18 17.94 6M18 18 6.06 6"/></svg>
-                    <span class="sr-only">Close modal</span>
-                </button>
-            </div>
-
-            <p class="mb-5 text-sm leading-relaxed text-neutral-400 overflow-hidden text-ellipsis line-clamp-4 h-24">
-                ${note.content}
-            </p>
-
-            <div class="flex items-center justify-between border-t border-neutral-800 pt-4 bg-linear-to-t from-neutral-900 via-neutral-900/35 to-transparent">
-                <input 
-                    id="note-checkbox-${note.id}" 
-                    type="checkbox" 
-                    class="w-4 h-4 border border-default-medium rounded-xs bg-neutral-secondary-medium focus:ring-2 focus:ring-brand-soft cursor-pointer"
-                    data-note-id="${note.id}"
-                >
-
-				<span class="text-[9px] text-neutral-400">
-					Intervalle : ${note.currentInterval} jour${note.currentInterval > 1 ? "s" : ""}
+					${intensityLabel}
 				</span>
 
-                <button
-                    id="read-more-${note.id}"
-                    type="button"
-                    class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-brand hover:text-brand-strong bg-brand/10 hover:bg-brand/20 border border-brand/20 rounded-lg transition cursor-pointer"
-                    data-note-id="${note.id}"
-                >
-                    Read more
-                </button>
-            </div>
-        </div>
-    `;
+				<h5 class="text-xl text-center font-semibold tracking-tight text-neutral-100 truncate max-w-45" title="${
+					note.title
+				}">
+					${note.title}
+				</h5>
+
+				<button id="delete-note-${note.id}" data-note-id="${note.id}"
+				title="Supprimer cette note" type="button" class="text-body bg-transparent hover:bg-neutral-tertiary/5 hover:text-heading rounded-base text-sm w-9 h-9 cursor-pointer transition shrink-0" data-modal-hide="static-modal">
+					<svg class="w-5 h-5 mx-auto" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18 17.94 6M18 18 6.06 6"/></svg>
+					<span class="sr-only">Close modal</span>
+				</button>
+			</div>
+
+			<p class="mb-5 text-sm leading-relaxed text-neutral-400 line-clamp-4 h-24 overflow-hidden">
+				${note.content}
+			</p>
+
+			<div class="flex items-center justify-between border-t border-neutral-800 pt-4 bg-linear-to-t from-neutral-900 via-neutral-900/35 to-transparent">
+				<input 
+					id="note-checkbox-${note.id}" 
+					type="checkbox" 
+					class="w-4 h-4 border border-default-medium rounded-xs bg-neutral-secondary-medium focus:ring-2 focus:ring-brand-soft cursor-pointer shrink-0"
+					data-note-id="${note.id}"
+				>
+
+				<span class="text-[9px] text-neutral-400 truncate px-1" title="Intervalle : ${
+					note.currentInterval
+				} jour${note.currentInterval > 1 ? "s" : ""}">
+					Intervalle : ${note.currentInterval}j
+				</span>
+
+				<button
+					id="read-more-${note.id}"
+					type="button"
+					class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-brand hover:text-brand-strong bg-brand/10 hover:bg-brand/20 border border-brand/20 rounded-lg transition cursor-pointer shrink-0"
+					data-note-id="${note.id}"
+				>
+					Read more
+				</button>
+			</div>
+		</div>
+	`;
 
 	// Ajouter les événements
 	attachNoteCardEvents(noteElement, note);

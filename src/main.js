@@ -12,7 +12,7 @@ let radioChill = document.getElementById("helper-radio-4");
 let radioModerate = document.getElementById("helper-radio-5");
 let radioIntensive = document.getElementById("helper-radio-6");
 let submitBtn = document.getElementById("submit-form");
-import { startAutoReview } from "./core/autoReview.js";
+import { startAutoReview } from "./init.js";
 
 startAutoReview();
 

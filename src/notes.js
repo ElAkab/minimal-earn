@@ -2,6 +2,9 @@ import { loadNotes } from "./utils/loadNotes.js";
 import { createNoteCard } from "./utils/noteCard.js";
 import { showExpandedCard } from "./utils/expandedCard.js";
 import { flashCard } from "./components/flashCard.js";
+import { startAutoReview } from "./init.js";
+
+startAutoReview();
 
 /**
  * Affiche les notes dans la section dédiée
