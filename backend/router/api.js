@@ -139,46 +139,106 @@ router.get("/notes/review", (req, res) => {
 	}
 });
 
-/**
- * GET /api/notes - Récupérer toutes les notes (triées par prochaine révision)
- */
-router.get("/notes", (req, res) => {
+// Créer une route POST /api/notes/review/:id qui reçoit le score, calcule la prochaine date via calculateNextReview, et met à jour la ligne dans la table "Notes".
+router.post("/notes/review/:id", (req, res) => {
 	try {
-		// Préparer la requête SQL
-		const stmt = db.prepare(`
-            SELECT 
-                id,
-                title, 
-                content,
-                intensity,
-                color,
-                nextReviewDate,
-                easeFactor,
-                currentInterval,
-                created_at
-            FROM Notes 
-            ORDER BY nextReviewDate ASC 
-            LIMIT 10
-        `);
+		const { id } = req.params;
+		const { score } = req.body;
 
-		// Exécuter la requête et récupérer toutes les lignes
-		const notes = stmt.all();
+		// Récupérer la note existante
+		const getStmt = db.prepare("SELECT * FROM Notes WHERE id = ?");
+		const note = getStmt.get(id);
 
-		// Retourner les données
+		if (!note) {
+			return res.status(404).json({ error: "Note introuvable" });
+		}
+
+		// Calculer la prochaine révision
+		const { interval, easeFactor } = calculateNextReview(
+			score,
+			note.currentInterval,
+			note.easeFactor
+		);
+		const nextReviewDate = addDays(new Date(), interval);
+
+		// Mettre à jour la note dans la base de données
+		const updateStmt = db.prepare(`
+			UPDATE Notes
+			SET easeFactor = ?, currentInterval = ?, nextReviewDate = ?
+			WHERE id = ?
+		`);
+		updateStmt.run(easeFactor, interval, nextReviewDate, id);
+
+		console.log(
+			`✅ Note ${id} mise à jour après révision ! prochaine révision dans ${interval} jours.`
+		);
+
 		res.json({
-			count: notes.length,
-			notes: notes,
+			message: "Note mise à jour avec succès",
+			note: {
+				id,
+				easeFactor,
+				currentInterval: interval,
+				nextReviewDate,
+			},
 		});
 	} catch (error) {
-		console.error("❌ Erreur lors de la récupération des notes:", error);
-		res.status(500).json({
-			error: "Erreur serveur lors de la récupération des notes",
-		});
+		console.error("❌ Erreur mise à jour note après révision:", error);
+		res.status(500).json({ error: "Erreur serveur" });
+	}
+
+	// Utilité pour calculer la date future (en jours)
+	function addDays(date, days) {
+		const result = new Date(date);
+		result.setDate(result.getDate() + days);
+		return result.toISOString(); // Format standard ISO pour SQLite DATETIME
 	}
 });
 
 /**
- * GET /api/create-test-notes - Créer des notes de test avec dates de révision passées
+ * GET /api/notes - Récupérer toutes les notes (avec filtrage optionnel par intensité)
+ * Query params: ?intensity=1|2|3 (optionnel)
+ */
+router.get("/notes", (req, res) => {
+	try {
+		const intensity = req.query.intensity;
+		let stmt;
+		let notes;
+
+		if (intensity && intensity !== "all" && intensity !== "") {
+			// Filtrer par intensité spécifique
+			stmt = db.prepare(`
+				SELECT 
+					id, title, content, intensity, color,
+					nextReviewDate, easeFactor, currentInterval, created_at
+				FROM Notes
+				WHERE intensity = ?
+				ORDER BY nextReviewDate ASC
+			`);
+			notes = stmt.all(intensity);
+			console.log(`📚 ${notes.length} notes récupérées (intensité ${intensity})`);
+		} else {
+			// Récupérer toutes les notes
+			stmt = db.prepare(`
+				SELECT 
+					id, title, content, intensity, color,
+					nextReviewDate, easeFactor, currentInterval, created_at
+				FROM Notes
+				ORDER BY nextReviewDate ASC
+			`);
+			notes = stmt.all();
+			console.log(`📚 ${notes.length} notes récupérées (toutes intensités)`);
+		}
+
+		res.json({ count: notes.length, notes });
+	} catch (error) {
+		console.error("❌ Erreur lors de la récupération des notes:", error);
+		res.status(500).json({ error: "Erreur serveur" });
+	}
+});
+
+/**
+ * GET /api/create-test-notes - Créer des notes de test avec dates de révision passées. Commande utile pour le développement : curl http://localhost:3000/api/create-test-notes.
  */
 router.get("/create-test-notes", (req, res) => {
 	try {
@@ -193,13 +253,25 @@ router.get("/create-test-notes", (req, res) => {
 				title: "Théorème de Pythagore",
 				content: "Quelle est la formule du théorème de Pythagore ?",
 				intensity: 2,
-				color: "blue",
+				color: "amber",
 			},
 			{
 				title: "JavaScript Closure",
 				content: "Qu'est-ce qu'une closure en JavaScript ?",
 				intensity: 2,
 				color: "amber",
+			},
+			{
+				title: "Révolution Française",
+				content: "En quelle année a eu lieu la Révolution Française ?",
+				intensity: 1,
+				color: "blue",
+			},
+			{
+				title: "Algorithme de tri rapide",
+				content: "Expliquez le fonctionnement du Quick Sort et sa complexité temporelle",
+				intensity: 3,
+				color: "red",
 			},
 		];
 

@@ -10,7 +10,7 @@ const INTERVAL_MS = 15000; // 15 secondes
 
 // État interne
 let timerId = null; // ID de l'intervalle
-let isCardDisplayed = false; // Indique si une carte est actuellement affichée
+let isCardDisplayed = true; // Indique si une carte est actuellement affichée
 let currentCard = null; // Référence à la carte affichée
 
 /**
@@ -47,7 +47,7 @@ async function showCard() {
 
 	console.log("🎯 [AutoReview] Affichage d'une carte aléatoire...");
 
-	const note = await fetchRandomNote();
+	const note = await fetchRandomNote(); // Utilise l'intensité par défaut
 	if (!note) {
 		console.log("⏭️ [AutoReview] Aucune carte disponible, réessai dans 15s");
 		return;
@@ -92,7 +92,7 @@ export function startAutoReview() {
 	console.log("🚀 [AutoReview] Démarrage (intervalle: 15s)");
 
 	// Premier affichage immédiat
-	showCard();
+	// showCard();
 
 	// Puis toutes les 15 secondes
 	timerId = setInterval(() => {

@@ -41,7 +41,7 @@ export function calculateNextReview(score, interval, easeFactor) {
 	}
 }
 
-// Récupère la note à réviser en fonction de la date de prochaine révision
+// Récupère la note à réviser en fonction de la date de prochaine révision.
 export function getNoteToReview(intensity) {
 	const now = new Date().toISOString();
 
@@ -52,7 +52,7 @@ export function getNoteToReview(intensity) {
 	);
 
 	// Vérifier combien de notes existent au total
-	const totalNotes = db.prepare("SELECT COUNT(*) as count FROM Notes").get();
+	const totalNotes = db.prepare("SELECT COUNT(*) as count FROM Notes").get(); // Total de notes dans la DB
 	console.log(`   📚 Total notes en DB : ${totalNotes.count}`);
 
 	// Vérifier combien ont l'intensité demandée
@@ -82,7 +82,7 @@ export function getNoteToReview(intensity) {
 	// Requête principale
 	const stmt = db.prepare(
 		"SELECT id, title, content, easeFactor, currentInterval FROM Notes WHERE nextReviewDate <= ? AND intensity = ? ORDER BY nextReviewDate ASC LIMIT 5"
-	);
+	); // Limite à 5 résultats pour éviter de surcharger la mémoire
 	const notes = stmt.all(now, intensity);
 
 	console.log(`   ✨ Résultat : ${notes.length} note(s) trouvée(s)\n`);

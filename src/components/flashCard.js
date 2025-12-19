@@ -98,45 +98,45 @@ function generateCardHTML(note) {
 			</div>
 
             <!-- Actions -->
-				<div class="w-full p-6 flex items-center justify-center">
-					<div id="actions-container" class="flex items-center">
-						<div class="flex flex-col ml-auto">
-							<button
-                                id="hint-button"
-								type="button"
-								class="show-hint px-4 py-2
-								bg-linear-to-b from-amber-500 to-orange-600
-								hover:from-amber-400 hover:to-orange-500
-								text-white rounded-t-full rounded-l-full font-medium cursor-pointer
-								transition-colors duration-300 ease-in-out">
-								💡
-							</button>
+			<div class="w-full p-6 flex items-center justify-center">
+				<div id="actions-container" class="flex items-center">
+					<div class="flex flex-col ml-auto">
+						<button
+							id="hint-button"
+							type="button"
+							class="show-hint px-4 py-2
+							bg-linear-to-b from-amber-500 to-orange-600
+							hover:from-amber-400 hover:to-orange-500
+							text-white rounded-t-full rounded-l-full font-medium cursor-pointer
+							transition-colors duration-300 ease-in-out">
+							💡
+						</button>
 
-							<button
-                                id="dont-know-button"
-								type="button"
-								class="dont-know px-4 py-2
-								bg-linear-to-b from-rose-600 to-red-700
-								hover:from-rose-500 hover:to-red-600
-								text-white rounded-b-full rounded-l-full font-medium cursor-pointer
-								transition-colors duration-300 ease-in-out">
-								❔
-							</button>
-						</div>
+						<button
+							id="dont-know-button"
+							type="button"
+							class="dont-know px-4 py-2
+							bg-linear-to-b from-rose-600 to-red-700
+							hover:from-rose-500 hover:to-red-600
+							text-white rounded-b-full rounded-l-full font-medium cursor-pointer
+							transition-colors duration-300 ease-in-out">
+							❔
+						</button>
+					</div>
 
-						<div class="text-xs text-gray-300 text-center mt-1">
-							<button
-								type="button"
-								class="show-context px-4 py-2
-								bg-linear-to-b from-slate-600 to-slate-800
-								hover:from-slate-500 hover:to-slate-700
-								text-white font-medium rounded-r-full text-nowrap cursor-pointer
-								transition-colors duration-300 ease-in-out">
-								| Tricher |
-							</button>
-						</div>
+					<div class="text-xs text-gray-300 text-center mt-1">
+						<button
+							type="button"
+							class="show-context px-4 py-2
+							bg-linear-to-b from-slate-600 to-slate-800
+							hover:from-slate-500 hover:to-slate-700
+							text-white font-medium rounded-r-full text-nowrap cursor-pointer
+							transition-colors duration-300 ease-in-out">
+							| Tricher |
+						</button>
 					</div>
 				</div>
+			</div>
         </article>
     `;
 }

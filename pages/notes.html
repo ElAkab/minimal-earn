@@ -30,6 +30,78 @@
 		</header>
 
 		<main class="flex flex-col w-full min-h-full mt-2.5">
+			<!-- Filtrage par intensité (Chill = 1, Sérieux = 2, Nécessaire = 3) -->
+			<section
+				id="intensity-filters"
+				class="w-full flex flex-col justify-center gap-3 px-6"
+			>
+				<div class="flex justify-center">
+					<!-- Tout afficher -->
+					<input
+						type="radio"
+						id="intensity-all"
+						name="intensity"
+						class="hidden intensity-radio"
+						value="all"
+						checked
+					/>
+					<label
+						for="intensity-all"
+						class="px-5 py-2.5 text-sm font-medium rounded-full cursor-pointer border-2 border-gray-600/40 text-gray-300 bg-gray-600/50 hover:bg-gray-600/30 hover:border-gray-500/60 ring-2 ring-gray-500/50 ring-offset-2 ring-offset-gray-800 transition-all duration-200 shadow-sm hover:shadow-md"
+					>
+						Tout afficher
+					</label>
+				</div>
+
+				<div class="flex justify-center gap-1.5">
+					<!-- Chill -->
+					<input
+						type="radio"
+						id="intensity-1"
+						name="intensity"
+						class="hidden intensity-radio"
+						value="1"
+					/>
+					<label
+						for="intensity-1"
+						class="px-4 py-2 text-sm font-medium rounded cursor-pointer border-2 border-blue-600/40 text-blue-400 hover:bg-blue-600/25 hover:border-blue-500/60 transition-all duration-200 shadow-sm hover:shadow-md"
+					>
+						Chill
+					</label>
+
+					<!-- Sérieux -->
+					<input
+						type="radio"
+						id="intensity-2"
+						name="intensity"
+						class="hidden intensity-radio"
+						value="2"
+					/>
+					<label
+						for="intensity-2"
+						class="px-4 py-2 text-sm font-medium rounded cursor-pointer border-2 border-amber-600/40 text-amber-400 hover:bg-amber-500/25 hover:border-amber-500/60 transition-all duration-200 shadow-sm hover:shadow-md"
+					>
+						Sérieux
+					</label>
+
+					<!-- Nécessaire -->
+					<input
+						type="radio"
+						id="intensity-3"
+						name="intensity"
+						class="hidden intensity-radio"
+						value="3"
+					/>
+					<label
+						for="intensity-3"
+						class="px-4 py-2 text-sm font-medium rounded cursor-pointer border-2 border-red-600/40 text-red-400 hover:bg-red-600/25 hover:border-red-500/60 transition-all duration-200 shadow-sm hover:shadow-md"
+					>
+						Nécessaire
+					</label>
+				</div>
+			</section>
+
+			<!-- Zone des notes -->
 			<section
 				id="notes-field"
 				class="w-full max-w-6xl mx-auto p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 auto-rows-max"

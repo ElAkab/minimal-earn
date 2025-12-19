@@ -53,7 +53,7 @@ export function getIntensityLabel(intensity) {
  * @returns {number} Le numéro d'intensité (1, 2, 3)
  */
 export function getIntensityValue(label) {
-	return INTENSITY_MAP[label] || 2; // Par défaut : Sérieux
+	return INTENSITY_MAP[label]; // Par défaut : Sérieux
 }
 
 /**

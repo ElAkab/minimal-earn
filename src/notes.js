@@ -3,34 +3,154 @@ import { createNoteCard } from "./utils/noteCard.js";
 import { showExpandedCard } from "./utils/expandedCard.js";
 import { flashCard } from "./components/flashCard.js";
 import { startAutoReview } from "./init.js";
+import { getIntensityColor } from "./utils/constants.js";
 
 startAutoReview();
 
+// ==================================
+// Gestion du filtrage par intensité
+// ==================================
+
+const radios = document.querySelectorAll(".intensity-radio");
+
+radios.forEach((radio) => {
+	radio.addEventListener("change", () => {
+		// Retirer le style actif de tous les labels
+		radios.forEach((r) => {
+			const label = document.querySelector(`label[for="${r.id}"]`);
+			label.classList.remove(
+				"bg-blue-600/40",
+				"bg-amber-500/40",
+				"bg-red-600/40",
+				"bg-gray-600/50",
+				"text-white",
+				"font-bold",
+				"border-blue-500",
+				"border-amber-500",
+				"border-red-500",
+				"border-gray-500",
+				"ring-2",
+				"ring-offset-2",
+				"ring-offset-gray-800"
+			);
+		});
+
+		// Ajouter le style actif au label sélectionné
+		const selectedLabel = document.querySelector(`label[for="${radio.id}"]`);
+		const value = radio.value; // "1", "2", "3" ou "all"
+
+		if (value === "all") {
+			selectedLabel.classList.add(
+				"bg-gray-600/50",
+				"border-gray-500",
+				"text-white",
+				"font-bold",
+				"ring-2",
+				"ring-gray-500/50",
+				"ring-offset-2",
+				"ring-offset-gray-800"
+			);
+		} else if (value === "1") {
+			selectedLabel.classList.add(
+				"bg-blue-600/40",
+				"border-blue-500",
+				"text-white",
+				"font-bold",
+				"ring-2",
+				"ring-blue-500/50",
+				"ring-offset-2",
+				"ring-offset-gray-800"
+			);
+		} else if (value === "2") {
+			selectedLabel.classList.add(
+				"bg-amber-500/40",
+				"border-amber-500",
+				"text-white",
+				"font-bold",
+				"ring-2",
+				"ring-amber-500/50",
+				"ring-offset-2",
+				"ring-offset-gray-800"
+			);
+		} else if (value === "3") {
+			selectedLabel.classList.add(
+				"bg-red-600/40",
+				"border-red-500",
+				"text-white",
+				"font-bold",
+				"ring-2",
+				"ring-red-500/50",
+				"ring-offset-2",
+				"ring-offset-gray-800"
+			);
+		}
+
+		console.log(
+			`🎯 Filtre sélectionné: ${
+				value === "all" ? "Tous" : "Intensité " + value
+			}`
+		);
+
+		// Appliquer le filtre d'intensité
+		const intensityParam = value === "all" ? "" : value;
+		displayNotes(intensityParam);
+	});
+});
+
+// ==================================
+
 /**
  * Affiche les notes dans la section dédiée
+ * @param {string} intensity - Intensité à filtrer ("1", "2", "3", "all" ou "")
  */
-async function displayNotes() {
+async function displayNotes(intensity = "") {
 	const notesField = document.getElementById("notes-field");
-	const notes = await loadNotes();
-
-	notesField.innerHTML = "";
-
-	if (notes.length === 0) {
-		notesField.innerHTML = `
-            <div class="text-center py-12">
-                <p class="text-neutral-400 text-lg">Aucune note à afficher</p>
-                <p class="text-neutral-500 text-sm mt-2">Créez votre première note pour commencer à réviser !</p>
-            </div>
-        `;
+	if (!notesField) {
+		console.error("❌ Conteneur de notes introuvable");
 		return;
 	}
 
-	notes.forEach((note) => {
-		const noteCard = createNoteCard(note);
-		notesField.appendChild(noteCard);
-	});
+	// Afficher un indicateur de chargement
+	notesField.innerHTML =
+		'<div class="text-center py-12 text-gray-400">Chargement...</div>';
 
-	console.log(`📚 ${notes.length} notes affichées`);
+	try {
+		const notes = await loadNotes(intensity);
+
+		// Vider le conteneur
+		notesField.innerHTML = "";
+
+		// Si aucune note
+		if (notes.length === 0) {
+			const filterText =
+				intensity && intensity !== "all"
+					? ` avec l'intensité ${intensity}`
+					: "";
+			notesField.innerHTML = `
+				<div class="col-span-full text-center py-12">
+					<p class="text-neutral-400 text-lg">Aucune note à afficher${filterText}</p>
+					<p class="text-neutral-500 text-sm mt-2">Créez votre première note pour commencer à réviser !</p>
+				</div>
+			`;
+			return;
+		}
+
+		// Afficher les notes
+		notes.forEach((note) => {
+			const noteCard = createNoteCard(note);
+			notesField.appendChild(noteCard);
+		});
+
+		console.log(`✅ ${notes.length} notes affichées`);
+	} catch (error) {
+		console.error("❌ Erreur lors de l'affichage des notes:", error);
+		notesField.innerHTML = `
+			<div class="col-span-full text-center py-12">
+				<p class="text-red-400 text-lg">❌ Erreur lors du chargement des notes</p>
+				<p class="text-neutral-500 text-sm mt-2">Vérifiez que le serveur est démarré</p>
+			</div>
+		`;
+	}
 }
 
 /**
@@ -92,7 +212,7 @@ window.addEventListener("expandNoteCard", handleExpandCard);
 window.addEventListener("startReview", handleStartReview);
 
 // Charger et afficher les notes au chargement de la page
-window.addEventListener("DOMContentLoaded", displayNotes);
+window.addEventListener("DOMContentLoaded", () => displayNotes(""));
 
 // Bouton de suppression
 const deleteBtn = document.getElementById("deleteBtn");
